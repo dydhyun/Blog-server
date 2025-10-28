@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService{
         User joinedUser = userRepository.save(user);
 
         UserDto joinedUserDto = joinedUser.toDto();
+        joinedUserDto.setUserPw("");
 
         return joinedUserDto;
     }
