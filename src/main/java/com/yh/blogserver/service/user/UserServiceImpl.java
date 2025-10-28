@@ -27,24 +27,47 @@ public class UserServiceImpl implements UserService{
 
         long countedByUserId = userRepository.countByUserId(userId);
 
-        if (countedByUserId < 1){
-            checkMsgMap.put("userIdCheckMsg", "available userId");
-        } else {
+        if (countedByUserId >= 1) {
             throw new IllegalStateException("invalid userId");
         }
 
+        checkMsgMap.put("userIdCheckMsg", "available userId");
         return checkMsgMap;
     }
 
     @Override
     public Map<String, String> userPwCheck(String userPw) {
         HashMap<String, String> checkMsgMap = new HashMap<>();
+
+        if (userPw.isEmpty() || userPw.trim().isEmpty()){
+            throw new IllegalArgumentException("password must not be empty");
+        }
+        if (16 < userPw.length() || userPw.length() < 8){
+            throw new IllegalArgumentException("비밀번호는 8 ~ 16 글자 입니다.");
+        }
+        if (!userPw.matches(".*[`~!@#$%^&*()_+=.,].*")) {
+            throw new IllegalArgumentException("비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다.");
+        }
+
+        checkMsgMap.put("userPwCheckMsg", "available userPw");
         return checkMsgMap;
     }
 
     @Override
     public Map<String, String> userNicknameCheck(String userNickname) {
         HashMap<String, String> checkMsgMap = new HashMap<>();
+
+        long countedByUserNickname = userRepository.countByNickname(userNickname);
+
+        if (userNickname.isEmpty() || userNickname.trim().isEmpty()){
+            throw new IllegalArgumentException("userNickname must not be empty");
+        }
+
+        if (countedByUserNickname >= 1){
+            throw new IllegalArgumentException("invalid nickname");
+        }
+
+        checkMsgMap.put("userNicknameCheckMsg", "available nickname");
         return checkMsgMap;
     }
 

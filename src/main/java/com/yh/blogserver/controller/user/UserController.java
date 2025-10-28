@@ -37,7 +37,27 @@ public class UserController {
         return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
     }
 
+    @PostMapping("api/userPw-check")
+    public ResponseEntity<?> userPwCheck(@RequestBody UserDto userDto){
+        ResponseDto<Map<String,String>> responseDto = new ResponseDto<>();
 
+        Map<String, String> checkMsgMap = userService.userPwCheck(userDto.getUserPw());
+        responseDto.setItem(checkMsgMap);
+        responseDto.setStatusCode(HttpStatus.OK.value());
+        responseDto.setStatusMessage("OK");
+        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+    }
+
+    @PostMapping("api/userNickname-check")
+    public ResponseEntity<?> userNicknameCheck(@RequestBody UserDto userDto){
+        ResponseDto<Map<String,String>> responseDto = new ResponseDto<>();
+
+        Map<String, String> checkMsgMap = userService.userNicknameCheck(userDto.getNickname());
+        responseDto.setItem(checkMsgMap);
+        responseDto.setStatusCode(HttpStatus.OK.value());
+        responseDto.setStatusMessage("OK");
+        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+    }
 
     @PostMapping("api/join")
     public ResponseEntity<?> tempJoin(@RequestBody UserDto userDto){
