@@ -15,7 +15,8 @@ public class SecurityConfig {
         return http
                 // React 프론트가 요청 보내는 REST API 모두 허용
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+//                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+//                        /api/admin/** 접근 권한은 서비스 레이어에서 isAdmin 검사로 처리
                         .anyRequest().permitAll()
                 )
                 // CORS 허용 (React 통신 용도 추가하기)

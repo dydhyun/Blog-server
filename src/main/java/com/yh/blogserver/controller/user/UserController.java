@@ -42,7 +42,7 @@ public class UserController {
         responseDto.setItem(checkMsgMap);
         responseDto.setStatusCode(HttpStatus.OK.value());
         responseDto.setStatusMessage("OK");
-        
+
         return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
     }
 
