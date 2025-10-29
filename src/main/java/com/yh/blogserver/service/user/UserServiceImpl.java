@@ -3,7 +3,6 @@ package com.yh.blogserver.service.user;
 import com.yh.blogserver.dto.UserDto;
 import com.yh.blogserver.entitiy.User;
 import com.yh.blogserver.repository.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +13,11 @@ import java.util.Map;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -87,6 +86,21 @@ public class UserServiceImpl implements UserService{
         joinedUserDto.setUserPw("");
 
         return joinedUserDto;
+    }
+
+    @Override
+    public UserDto login(UserDto userDto) {
+
+        UserDto foundUserDto = userRepository.findByUserId(userDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")).toDto();
+
+        if (!passwordEncoder.matches(userDto.getUserPw(), foundUserDto.getUserPw())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        foundUserDto.setUserPw("");
+
+        return foundUserDto;
     }
 
 
