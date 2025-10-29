@@ -3,6 +3,8 @@ package com.yh.blogserver.service.user;
 import com.yh.blogserver.dto.UserDto;
 import com.yh.blogserver.entitiy.User;
 import com.yh.blogserver.repository.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,6 +14,8 @@ import java.util.Map;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -74,6 +78,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto join(UserDto userDto){
 
+        userDto.setUserPw(passwordEncoder.encode(userDto.getUserPw()));
         User user = userDto.toEntity();
 
         User joinedUser = userRepository.save(user);
