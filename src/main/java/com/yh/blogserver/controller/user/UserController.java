@@ -84,7 +84,7 @@ public class UserController {
 //        String refreshToken = jwtTokenProvider.createRefreshToken(loginedUserDto.getUserId());
         
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization","Bearer" + token);
+        httpHeaders.add("Authorization","Bearer " + token);
         // http 표준 규약 -> Authorization: <type> <credentials>
 
         responseDto.setItem(loginedUserDto);
