@@ -1,7 +1,7 @@
 package com.yh.blogserver.config;
 
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +13,10 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
+    private final long accessTokenValidityMS = 1000L * 60 * 10;
+    // ms * s * m * H * d
+    private final long refreshTokenValidityMS = 1000L * 60 * 60 * 24 * 7;
 
     private final Key key;
 
@@ -27,23 +31,34 @@ public class JwtTokenProvider {
     //  "typ": "JWT"
     //}
     public String createToken(String userId, boolean isAdmin) {
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + accessTokenValidityMS);
+
         return Jwts.builder()
+                .header().add("typ", "JWT")
+                .and()
                 .claim("userId", userId)
                 .claim("isAdmin", isAdmin)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
-                // ms * s * m * H * d
+                .setIssuedAt(now)
+                .setExpiration(expiry)
                 // signature 생성부 ->
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String createRefreshToken(String userId) {
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + refreshTokenValidityMS);
+
         return Jwts.builder()
+                .header().add("typ", "JWT")
+                .and()
                 .claim("userId", userId)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
-                .signWith(key)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -56,8 +71,11 @@ public class JwtTokenProvider {
             return true;
         } catch (Exception e) {
             return false;
+//        } catch (ExpiredJwtException e){
+//            exception 처리 생각하기
         }
     }
+
     public String getUserIdFromToken(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) key)
