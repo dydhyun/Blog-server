@@ -1,7 +1,7 @@
 package com.yh.blogserver.dto;
 
-import com.yh.blogserver.entitiy.Board;
-import com.yh.blogserver.entitiy.User;
+import com.yh.blogserver.entity.Board;
+import com.yh.blogserver.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;

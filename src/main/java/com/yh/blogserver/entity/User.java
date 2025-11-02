@@ -1,4 +1,4 @@
-package com.yh.blogserver.entitiy;
+package com.yh.blogserver.entity;
 
 import com.yh.blogserver.dto.UserDto;
 import jakarta.persistence.*;
