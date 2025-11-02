@@ -85,4 +85,12 @@ public class JwtTokenProvider {
                 .get("userId", String.class);
     }
 
+    public boolean getUserGrantFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith((SecretKey) key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("isAdmin", Boolean.class);
+    }
 }
