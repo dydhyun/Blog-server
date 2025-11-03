@@ -1,6 +1,6 @@
 package com.yh.blogserver.repository.user;
 
-import com.yh.blogserver.entitiy.User;
+import com.yh.blogserver.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

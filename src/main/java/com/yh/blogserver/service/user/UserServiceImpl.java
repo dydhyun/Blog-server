@@ -1,7 +1,7 @@
 package com.yh.blogserver.service.user;
 
 import com.yh.blogserver.dto.UserDto;
-import com.yh.blogserver.entitiy.User;
+import com.yh.blogserver.entity.User;
 import com.yh.blogserver.repository.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
