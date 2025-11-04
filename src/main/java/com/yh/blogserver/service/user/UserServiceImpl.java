@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -103,5 +104,11 @@ public class UserServiceImpl implements UserService{
         return foundUserDto;
     }
 
+    @Override
+    public UserDto getUserByUserId(String userId) {
 
+        Optional<User> foundUserDto = userRepository.findByUserId(userId);
+        
+        return foundUserDto.orElseThrow().toDto();
+    }
 }
