@@ -2,12 +2,14 @@ package com.yh.blogserver.entity;
 
 import com.yh.blogserver.dto.BoardDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Builder
+@AllArgsConstructor
 public class Board {
     protected Board() {} // jpa 자체 에서만 사용하는 기본생성자.
 
