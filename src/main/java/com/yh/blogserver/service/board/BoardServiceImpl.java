@@ -27,7 +27,8 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Boolean isWriterOf(BoardDto boardDto, String userId) {
+    public Boolean isWriterOf(Long boardIndex, String userId) {
+        BoardDto boardDto = boardRepository.findById(boardIndex).get().toDto();
 
         String writerId = boardDto.getUser().toDto().getUserId();
 
@@ -35,9 +36,22 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public String deleteBoard(BoardDto boardDto) {
+    public String updateDeleteFlag(Long boardIndex) {
 
-        boardRepository.deleteByBoardIndex(boardDto.boardIndex);
-        return "";
+        Board board = boardRepository.findById(boardIndex)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        board.markAsDeleted();
+
+        BoardDto deletedBoard = boardRepository.saveAndFlush(board).toDto();
+        // 스프링 배치 + 스케쥴러 + deleteFlag 이용해서 게시글 지우기
+        // deleteBoard
+//        boardRepository.deleteByBoardIndex(boardDto.boardIndex);
+        return "board deleted";
+    }
+
+    @Override
+    public BoardDto getBoard(Long boardIndex) {
+        return boardRepository.findById(boardIndex)
+                .orElseThrow(()-> new IllegalArgumentException("게시글을 찾을 수 없습니다.")).toDto();
     }
 }

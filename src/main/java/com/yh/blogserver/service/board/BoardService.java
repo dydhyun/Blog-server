@@ -5,7 +5,9 @@ import com.yh.blogserver.dto.BoardDto;
 public interface BoardService {
     BoardDto createBoard(BoardDto boardDto);
 
-    Boolean isWriterOf(BoardDto boardDto, String userId);
+    Boolean isWriterOf(Long boardIndex, String userId);
 
-    String deleteBoard(BoardDto boardDto);
+    String updateDeleteFlag(Long boardIndex);
+
+    BoardDto getBoard(Long boardIndex);
 }

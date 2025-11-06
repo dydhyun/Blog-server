@@ -32,7 +32,12 @@ public class Board {
     @Column(updatable = false)
     private LocalDateTime boardCreatedTime;
     private Long boardViewCnt;
+
     private boolean boardDeleteFlag;
+
+    public void markAsDeleted() {
+        this.boardDeleteFlag = true;
+    }
 
     @PrePersist
     private void prePersist(){
