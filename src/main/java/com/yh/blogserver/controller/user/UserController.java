@@ -93,6 +93,8 @@ public class UserController {
 
         return ResponseEntity.status(responseDto.getStatusCode()).headers(httpHeaders).body(responseDto);
     }
+    
+    // 탈퇴기능 추가하기
 
 
 
