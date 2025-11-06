@@ -5,6 +5,8 @@ import com.yh.blogserver.entity.Board;
 import com.yh.blogserver.repository.board.BoardRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BoardServiceImpl implements BoardService{
 
@@ -22,5 +24,20 @@ public class BoardServiceImpl implements BoardService{
         BoardDto createdBoard = boardRepository.save(board).toDto();
 
         return createdBoard;
+    }
+
+    @Override
+    public Boolean isWriterOf(BoardDto boardDto, String userId) {
+
+        String writerId = boardDto.getUser().toDto().getUserId();
+
+        return writerId.equals(userId);
+    }
+
+    @Override
+    public String deleteBoard(BoardDto boardDto) {
+
+        boardRepository.deleteByBoardIndex(boardDto.boardIndex);
+        return "";
     }
 }

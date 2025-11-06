@@ -1,11 +1,14 @@
 package com.yh.blogserver.service.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yh.blogserver.dto.UserDto;
 import com.yh.blogserver.entity.User;
 import com.yh.blogserver.repository.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -110,5 +113,25 @@ public class UserServiceImpl implements UserService{
         Optional<User> foundUserDto = userRepository.findByUserId(userId);
         
         return foundUserDto.orElseThrow().toDto();
+    }
+
+    @Override
+    public String authenticatedUser(String token) {
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        String[] splitToken = token.split("\\.");
+        String payloadJson = new String(decoder.decode(splitToken[1]));
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> payloadMap = null;
+        try {
+            payloadMap = mapper.readValue(payloadJson, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        String userId = (String) payloadMap.get("userId");
+
+        return userId;
     }
 }

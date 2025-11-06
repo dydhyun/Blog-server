@@ -17,4 +17,6 @@ public interface UserService {
     UserDto login(UserDto userDto);
 
     UserDto getUserByUserId(String UserId);
+
+    String authenticatedUser(String token);
 }
