@@ -32,11 +32,13 @@ public class Board {
     @Column(updatable = false)
     private LocalDateTime boardCreatedTime;
     private Long boardViewCnt;
+    private boolean boardDeleteFlag;
 
     @PrePersist
     private void prePersist(){
         this.boardCreatedTime = LocalDateTime.now();
         this.boardViewCnt = 0L;
+        this.boardDeleteFlag = false;
     }
 
     public BoardDto toDto(){
@@ -47,6 +49,7 @@ public class Board {
                 .boardContents(this.boardContents)
                 .boardCreatedTime(this.boardCreatedTime)
                 .boardViewCnt(this.boardViewCnt)
+                .boardDeleteFlag(this.boardDeleteFlag)
                 .build();
     }
 

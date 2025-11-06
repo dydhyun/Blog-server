@@ -20,6 +20,7 @@ public class BoardDto {
     public String boardContents;
     public LocalDateTime boardCreatedTime;
     public Long boardViewCnt;
+    public boolean boardDeleteFlag;
 
     public Board toEntity(){
         return Board.builder()
@@ -29,6 +30,7 @@ public class BoardDto {
                 .boardContents(this.boardContents)
                 .boardCreatedTime(this.boardCreatedTime)
                 .boardViewCnt(this.boardViewCnt)
+                .boardDeleteFlag(this.boardDeleteFlag)
                 .build();
     }
 
