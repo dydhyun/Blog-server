@@ -1,21 +1,20 @@
 package com.yh.blogserver.controller.board;
 
 import com.yh.blogserver.dto.BoardDto;
-import com.yh.blogserver.dto.ResponseDto;
 import com.yh.blogserver.dto.UserDto;
-import com.yh.blogserver.entity.Board;
 import com.yh.blogserver.service.board.BoardService;
 import com.yh.blogserver.service.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-
-@Controller
-@RequestMapping("/board")
+@RestController
+@RequestMapping("/boards")
 public class BoardController {
 
+    private static final Logger log = LoggerFactory.getLogger(BoardController.class);
     private final UserService userService;
     private final BoardService boardService;
 
@@ -25,42 +24,41 @@ public class BoardController {
     }
 
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<?> createBoard(@RequestHeader(value = "Authorization") String token, @RequestBody BoardDto boardDto){
-        ResponseDto<BoardDto> responseDto = new ResponseDto<>();
 
         String userId = userService.authenticatedUser(token);
+        log.info("[BOARD CREATE 요청] boardTitle={}, userId={}", boardDto.getBoardTitle(), userId);
 
         UserDto writer = userService.getUserByUserId(userId);
         boardDto.setUser(writer.toEntity());
         BoardDto createdBoard = boardService.createBoard(boardDto);
 
-        responseDto.setItem(createdBoard);
-        responseDto.setStatusCode(HttpStatus.CREATED.value());
-        responseDto.setStatusMessage("Created");
-
-        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
     }
 
     @DeleteMapping("/{boardIndex}")
     public ResponseEntity<?> deleteBoard(@RequestHeader(value = "Authorization") String token, @PathVariable Long boardIndex){
-        ResponseDto<String> responseDto = new ResponseDto<>();
-
+        
         String userId = userService.authenticatedUser(token);
-        String deleteMessage = "잘못된 접근입니다.";
+        log.info("[BOARD DELETE 요청] boardIndex={}, userId={}", boardIndex, userId);
+
         BoardDto boardDto = boardService.getBoard(boardIndex);
 
-        // 플래그 활용 생각하기
-
-        if(!boardDto.boardDeleteFlag && boardService.isWriterOf(boardIndex, userId)){
-            deleteMessage = boardService.updateDeleteFlag(boardIndex);
+        if (!boardService.isWriterOf(boardIndex, userId)) {
+            log.warn("[BOARD DELETE 실패] userId={} 가 게시글 {} 삭제 시도", userId, boardIndex);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("작성자만 삭제할 수 있습니다.");
         }
 
-        responseDto.setItem(deleteMessage);
-        responseDto.setStatusCode(HttpStatus.OK.value());
-        responseDto.setStatusMessage("Deleted");
+        if (boardDto.boardDeleteFlag) {
+            log.warn("[BOARD DELETE 실패] 이미 삭제된 게시글입니다. boardIndex={}", boardIndex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 삭제된 게시글입니다.");
+        }
 
-        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+        log.info("[BOARD DELETE 성공] userId={} 가 게시글 {} 삭제", userId, boardIndex);
+        boardService.updateDeleteFlag(boardIndex);
+
+        return ResponseEntity.status(HttpStatus.OK).body("삭제 되었습니다.");
     }
 
 
