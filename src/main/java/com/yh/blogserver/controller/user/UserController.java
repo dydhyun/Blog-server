@@ -25,38 +25,23 @@ public class UserController {
 
     @GetMapping("/check/id")
     public ResponseEntity<?> userIdCheck(@RequestParam String userId){
-        ResponseDto<Map<String,String>> responseDto = new ResponseDto<>();
 
         Map<String, String> checkMsgMap = userService.userIdCheck(userId);
-        responseDto.setItem(checkMsgMap);
-        responseDto.setStatusCode(HttpStatus.OK.value());
-        responseDto.setStatusMessage("OK");
-
-        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(checkMsgMap);
     }
 
     @GetMapping("/check/pw")
     public ResponseEntity<?> userPwCheck(@RequestParam String userPw){
-        ResponseDto<Map<String,String>> responseDto = new ResponseDto<>();
 
         Map<String, String> checkMsgMap = userService.userPwCheck(userPw);
-        responseDto.setItem(checkMsgMap);
-        responseDto.setStatusCode(HttpStatus.OK.value());
-        responseDto.setStatusMessage("OK");
-
-        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(checkMsgMap);
     }
 
     @GetMapping("/check/nickname")
     public ResponseEntity<?> userNicknameCheck(@RequestParam String userNickname){
-        ResponseDto<Map<String,String>> responseDto = new ResponseDto<>();
 
         Map<String, String> checkMsgMap = userService.userNicknameCheck(userNickname);
-        responseDto.setItem(checkMsgMap);
-        responseDto.setStatusCode(HttpStatus.OK.value());
-        responseDto.setStatusMessage("OK");
-
-        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(checkMsgMap);
     }
 
     @PostMapping("")
