@@ -1,8 +1,9 @@
 package com.yh.blogserver.controller.user;
 
 import com.yh.blogserver.config.JwtTokenProvider;
-import com.yh.blogserver.dto.ResponseDto;
-import com.yh.blogserver.dto.UserDto;
+import com.yh.blogserver.dto.response.ResponseDto;
+import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.service.user.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,66 +19,67 @@ public class UserController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
+    private static final String CHECK_MSG_KEY = "checkMessage";
+
     public UserController(UserService userService, JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @GetMapping("/check/id")
-    public ResponseEntity<?> userIdCheck(@RequestParam String userId){
+    @GetMapping("/exists/id")
+    public ResponseEntity<ResponseDto<Map<String, String>>> userIdCheck(@RequestParam String userId){
 
         Map<String, String> checkMsgMap = userService.userIdCheck(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(checkMsgMap);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(checkMsgMap, HttpStatus.OK, checkMsgMap.get(CHECK_MSG_KEY)));
     }
 
-    @GetMapping("/check/pw")
-    public ResponseEntity<?> userPwCheck(@RequestParam String userPw){
-
-        Map<String, String> checkMsgMap = userService.userPwCheck(userPw);
-        return ResponseEntity.status(HttpStatus.OK).body(checkMsgMap);
-    }
-
-    @GetMapping("/check/nickname")
-    public ResponseEntity<?> userNicknameCheck(@RequestParam String userNickname){
+    @GetMapping("/exists/nickname")
+    public ResponseEntity<ResponseDto<Map<String, String>>> userNicknameCheck(@RequestParam String userNickname){
 
         Map<String, String> checkMsgMap = userService.userNicknameCheck(userNickname);
-        return ResponseEntity.status(HttpStatus.OK).body(checkMsgMap);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(checkMsgMap, HttpStatus.OK, checkMsgMap.get(CHECK_MSG_KEY)));
+    }
+
+    // 비밀번호는 검증이기에 postMapping
+    @PostMapping("/verify-pw")
+    public ResponseEntity<ResponseDto<Map<String, String>>> userPwCheck(@RequestParam String userPw){
+
+        Map<String, String> checkMsgMap = userService.userPwCheck(userPw);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(checkMsgMap, HttpStatus.OK, checkMsgMap.get(CHECK_MSG_KEY)));
     }
 
     @PostMapping("")
-    public ResponseEntity<?> join(@RequestBody UserDto userDto){
-        ResponseDto<UserDto> responseDto = new ResponseDto<>();
+    public ResponseEntity<ResponseDto<UserResponseDto>> join(@RequestBody UserRequestDto userRequestDto){
 
-        UserDto joinedUserDto = userService.join(userDto);
-        responseDto.setItem(joinedUserDto);
-        responseDto.setStatusCode(HttpStatus.CREATED.value());
-        responseDto.setStatusMessage("CREATED");
+        UserResponseDto userResponseDto = userService.join(userRequestDto);
 
-        return ResponseEntity.status(responseDto.getStatusCode()).body(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseDto.success(userResponseDto, HttpStatus.CREATED, "CREATED"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto loginRequest){
-        ResponseDto<UserDto> responseDto = new ResponseDto<>();
+    public ResponseEntity<ResponseDto<UserResponseDto>> login(@RequestBody UserRequestDto loginRequest){
 
-        UserDto loginedUserDto = userService.login(loginRequest);
+        UserResponseDto loginedUserDto = userService.login(loginRequest);
 
-        String token = jwtTokenProvider.createToken(loginedUserDto.getUserId(), loginedUserDto.getIsAdmin());
+        String token = jwtTokenProvider.createToken(loginedUserDto.userId(), loginedUserDto.isAdmin());
 //        String refreshToken = jwtTokenProvider.createRefreshToken(loginedUserDto.getUserId());
-        
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Bearer " + token);
         // http 표준 규약 -> Authorization: <type> <credentials>
 
-        responseDto.setItem(loginedUserDto);
-        responseDto.setStatusCode(HttpStatus.OK.value());
-        responseDto.setStatusMessage("LOGIN SUCCESS");
-
-        return ResponseEntity.status(responseDto.getStatusCode()).headers(httpHeaders).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders)
+                .body(ResponseDto.success(loginedUserDto, HttpStatus.OK, "LOGGED IN"));
     }
     
     // 탈퇴기능 추가하기
-
 
 
 }
