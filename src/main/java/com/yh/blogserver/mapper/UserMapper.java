@@ -17,6 +17,7 @@ public class UserMapper {
                 .address(user.getAddress())
                 .addressDetail(user.getAddressDetail())
                 .email(user.getEmail())
+                .isAdmin(user.getIsAdmin())
                 .createdDate(user.getCreatedDate())
                 .build();
     }
@@ -32,6 +33,7 @@ public class UserMapper {
                 .addressDetail(user.getAddressDetail())
                 .pNumber(user.getPNumber())
                 .email(user.getEmail())
+                .isAdmin(user.getIsAdmin())
                 .createdDate(user.getCreatedDate())
                 .build();
     }
@@ -47,6 +49,7 @@ public class UserMapper {
                 .addressDetail(dto.addressDetail())
                 .pNumber(dto.pNumber())
                 .email(dto.email())
+                .isAdmin(dto.isAdmin())
                 .createdDate(dto.createdDate())
                 .build();
     }
