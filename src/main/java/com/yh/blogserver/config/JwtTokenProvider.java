@@ -14,15 +14,19 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final long accessTokenValidityMS = 1000L * 60 * 10;
-    // ms * s * m * H * d
-    private final long refreshTokenValidityMS = 1000L * 60 * 60 * 24 * 7;
-
+    private final long accessTokenValidityMS;
+    private final long refreshTokenValidityMS;
     private final Key key;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.accessTokenValidityTime}") long accessTokenValidityMS,
+            @Value("${jwt.refreshTokenValidityTime}") long refreshTokenValidityMS
+    ) {
         // Base64 디코딩 후 SecretKey 생성
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        this.accessTokenValidityMS = accessTokenValidityMS;
+        this.refreshTokenValidityMS = refreshTokenValidityMS;
     }
 
     // header 는 다음 값으로 자동으로 생성하며, .claim() 으로 페이로드를 추가함.
