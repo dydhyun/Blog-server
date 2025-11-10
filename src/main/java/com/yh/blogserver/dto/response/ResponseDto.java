@@ -1,12 +1,18 @@
-package com.yh.blogserver.dto;
+package com.yh.blogserver.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class ResponseDto<T> {
-    private T item;
-    private int statusCode;
-    private String message;
+import org.springframework.http.HttpStatus;
+
+public record ResponseDto<T> (
+    T data,
+    HttpStatus status,
+    String message
+) {
+    public static <T> ResponseDto<T> success(T data, HttpStatus status, String message) {
+        return new ResponseDto<>(data, status, message);
+    }
+
+    public static <T> ResponseDto<T> error(HttpStatus status, String message) {
+        return new ResponseDto<>(null, status, message);
+    }
 }
