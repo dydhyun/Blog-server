@@ -1,15 +1,16 @@
 package com.yh.blogserver.entity;
 
-import com.yh.blogserver.dto.BoardDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Builder
 @AllArgsConstructor
+@Getter
 public class Board {
     protected Board() {} // jpa 자체 에서만 사용하는 기본생성자.
 
@@ -45,17 +46,4 @@ public class Board {
         this.boardViewCnt = 0L;
         this.boardDeleteFlag = false;
     }
-
-    public BoardDto toDto(){
-        return BoardDto.builder()
-                .boardIndex(this.boardIndex)
-                .user(this.user)
-                .boardTitle(this.boardTitle)
-                .boardContents(this.boardContents)
-                .boardCreatedTime(this.boardCreatedTime)
-                .boardViewCnt(this.boardViewCnt)
-                .boardDeleteFlag(this.boardDeleteFlag)
-                .build();
-    }
-
 }

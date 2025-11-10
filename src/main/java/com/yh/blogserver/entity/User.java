@@ -1,10 +1,7 @@
 package com.yh.blogserver.entity;
 
-import com.yh.blogserver.dto.UserDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -43,22 +42,4 @@ public class User {
         this.isAdmin = false;
         this.createdDate = LocalDateTime.now();
     }
-
-
-    public UserDto toDto() {
-        return UserDto.builder()
-                .userIndex(this.userIndex)
-                .userId(this.userId)
-                .userPw(this.userPw)
-                .username(this.username)
-                .nickname(this.nickname)
-                .address(this.address)
-                .addressDetail(this.addressDetail)
-                .pNumber(this.pNumber)
-                .email(this.email)
-                .isAdmin(this.isAdmin)
-                .createdDate(this.createdDate)
-                .build();
-    }
-
 }
