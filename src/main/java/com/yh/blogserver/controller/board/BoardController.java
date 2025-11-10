@@ -1,7 +1,9 @@
 package com.yh.blogserver.controller.board;
 
-import com.yh.blogserver.dto.BoardDto;
-import com.yh.blogserver.dto.UserDto;
+import com.yh.blogserver.dto.request.BoardRequestDto;
+import com.yh.blogserver.dto.response.BoardResponseDto;
+import com.yh.blogserver.dto.response.ResponseDto;
+import com.yh.blogserver.entity.User;
 import com.yh.blogserver.service.board.BoardService;
 import com.yh.blogserver.service.user.UserService;
 import org.slf4j.Logger;
@@ -25,32 +27,35 @@ public class BoardController {
 
 
     @PostMapping("")
-    public ResponseEntity<?> createBoard(@RequestHeader(value = "Authorization") String token, @RequestBody BoardDto boardDto){
+    public ResponseEntity<?> createBoard(@RequestHeader(value = "Authorization") String token,
+                                         @RequestBody BoardRequestDto boardRequestDto){
 
         String userId = userService.authenticatedUser(token);
-        log.info("[BOARD CREATE 요청] boardTitle={}, userId={}", boardDto.getBoardTitle(), userId);
+        log.info("[BOARD CREATE 요청] boardTitle={}, userId={}", boardRequestDto.boardTitle(), userId);
 
-        UserDto writer = userService.getUserByUserId(userId);
-        boardDto.setUser(writer.toEntity());
-        BoardDto createdBoard = boardService.createBoard(boardDto);
+        User writer = userService.getUserEntityByUserId(userId);
+        BoardRequestDto updatedDto = boardRequestDto.toBuilder().user(writer).build();
+
+        BoardResponseDto createdBoard = boardService.createBoard(updatedDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
     }
 
     @DeleteMapping("/{boardIndex}")
-    public ResponseEntity<?> deleteBoard(@RequestHeader(value = "Authorization") String token, @PathVariable Long boardIndex){
-        
+    public ResponseEntity<?> deleteBoard(@RequestHeader(value = "Authorization") String token,
+                                         @PathVariable Long boardIndex){
+
         String userId = userService.authenticatedUser(token);
         log.info("[BOARD DELETE 요청] boardIndex={}, userId={}", boardIndex, userId);
 
-        BoardDto boardDto = boardService.getBoard(boardIndex);
+        BoardResponseDto boardResponseDto = boardService.getBoard(boardIndex);
 
         if (!boardService.isWriterOf(boardIndex, userId)) {
             log.warn("[BOARD DELETE 실패] userId={} 가 게시글 {} 삭제 시도", userId, boardIndex);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("작성자만 삭제할 수 있습니다.");
         }
 
-        if (boardDto.boardDeleteFlag) {
+        if (boardResponseDto.boardDeleteFlag()) {
             log.warn("[BOARD DELETE 실패] 이미 삭제된 게시글입니다. boardIndex={}", boardIndex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 삭제된 게시글입니다.");
         }
