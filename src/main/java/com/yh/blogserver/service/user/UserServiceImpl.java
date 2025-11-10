@@ -2,8 +2,10 @@ package com.yh.blogserver.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yh.blogserver.dto.UserDto;
+import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
+import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService{
             throw new IllegalStateException("invalid userId");
         }
 
-        checkMsgMap.put("userIdCheckMsg", "available userId");
+        checkMsgMap.put("checkMessage", "available userId");
         return checkMsgMap;
     }
 
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다.");
         }
 
-        checkMsgMap.put("userPwCheckMsg", "available userPw");
+        checkMsgMap.put("checkMessage", "available userPw");
         return checkMsgMap;
     }
 
@@ -74,45 +76,48 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("invalid nickname");
         }
 
-        checkMsgMap.put("userNicknameCheckMsg", "available nickname");
+        checkMsgMap.put("checkMessage", "available nickname");
         return checkMsgMap;
     }
 
     @Override
-    public UserDto join(UserDto userDto){
+    public UserResponseDto join(UserRequestDto userRequestDto){
 
-        userDto.setUserPw(passwordEncoder.encode(userDto.getUserPw()));
-        User user = userDto.toEntity();
+        String encodedPw = (passwordEncoder.encode(userRequestDto.userPw()));
+        User user = UserMapper.fromDto(userRequestDto);
+        user.setUserPw(encodedPw);
 
         User joinedUser = userRepository.save(user);
-
-        UserDto joinedUserDto = joinedUser.toDto();
-        joinedUserDto.setUserPw("");
+        joinedUser.setUserPw("");
+        UserResponseDto joinedUserDto = UserMapper.toUserResponseDto(joinedUser);
 
         return joinedUserDto;
     }
 
     @Override
-    public UserDto login(UserDto userDto) {
+    public UserResponseDto login(UserRequestDto userRequestDto) {
 
-        UserDto foundUserDto = userRepository.findByUserId(userDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")).toDto();
+        User foundUser = userRepository.findByUserId(userRequestDto.userId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
 
-        if (!passwordEncoder.matches(userDto.getUserPw(), foundUserDto.getUserPw())){
+        if (!passwordEncoder.matches(userRequestDto.userPw(), foundUser.getUserPw())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        foundUserDto.setUserPw("");
-
-        return foundUserDto;
+        return UserMapper.toUserResponseDto(foundUser);
     }
 
     @Override
-    public UserDto getUserByUserId(String userId) {
+    public UserResponseDto getUserByUserId(String userId) {
 
-        Optional<User> foundUserDto = userRepository.findByUserId(userId);
+        Optional<User> foundUser = userRepository.findByUserId(userId);
         
-        return foundUserDto.orElseThrow().toDto();
+        return UserMapper.toUserResponseDto(foundUser.orElseThrow());
+    }
+
+    @Override
+    public User getUserEntityByUserId(String userId) {
+        return userRepository.findByUserId(userId).orElseThrow();
     }
 
     @Override

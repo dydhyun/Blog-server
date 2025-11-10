@@ -1,6 +1,8 @@
 package com.yh.blogserver.service.user;
 
-import com.yh.blogserver.dto.UserDto;
+import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.response.UserResponseDto;
+import com.yh.blogserver.entity.User;
 
 import java.util.Map;
 
@@ -12,11 +14,14 @@ public interface UserService {
 
     Map<String, String> userNicknameCheck(String userNickname);
 
-    UserDto join(UserDto userDto);
+    UserResponseDto join(UserRequestDto userRequestDto);
 
-    UserDto login(UserDto userDto);
+    UserResponseDto login(UserRequestDto userRequestDto);
 
-    UserDto getUserByUserId(String UserId);
+    UserResponseDto getUserByUserId(String UserId);
+
+    User getUserEntityByUserId(String userId);
 
     String authenticatedUser(String token);
+
 }
