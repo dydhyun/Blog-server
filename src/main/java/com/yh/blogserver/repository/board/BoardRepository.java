@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
+    void deleteByBoardIndex(Long boardIndex);
+
+    boolean existsByBoardIndexAndUser_UserId(Long boardIndex, String userId);
 }
