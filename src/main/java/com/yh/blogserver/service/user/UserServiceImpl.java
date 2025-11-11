@@ -7,6 +7,7 @@ import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
 import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
+import com.yh.blogserver.util.message.UserMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,16 +32,16 @@ public class UserServiceImpl implements UserService{
         HashMap<String, String> checkMsgMap = new HashMap<>();
 
         if (userId == null || userId.trim().isEmpty()) {
-            throw new IllegalArgumentException("userId must not be empty");
+            throw new IllegalArgumentException(UserMessage.ID_MUST_NOT_BE_EMPTY.message());
         }
 
         long countedByUserId = userRepository.countByUserId(userId);
 
         if (countedByUserId >= 1) {
-            throw new IllegalStateException("invalid userId");
+            throw new IllegalStateException(UserMessage.INVALID_USER_ID.message());
         }
 
-        checkMsgMap.put("checkMessage", "available userId");
+        checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_ID.message());
         return checkMsgMap;
     }
 
@@ -49,16 +50,16 @@ public class UserServiceImpl implements UserService{
         HashMap<String, String> checkMsgMap = new HashMap<>();
 
         if (userPw.isEmpty() || userPw.trim().isEmpty()){
-            throw new IllegalArgumentException("password must not be empty");
+            throw new IllegalArgumentException(UserMessage.PASSWORD_MUST_NOT_BE_EMPTY.message());
         }
         if (16 < userPw.length() || userPw.length() < 8){
-            throw new IllegalArgumentException("비밀번호는 8 ~ 16 글자 입니다.");
+            throw new IllegalArgumentException(UserMessage.PASSWORD_LENGTH_MESSAGE.message());
         }
         if (!userPw.matches(".*[`~!@#$%^&*()_+=.,].*")) {
             throw new IllegalArgumentException("비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다.");
         }
 
-        checkMsgMap.put("checkMessage", "available userPw");
+        checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_PW.message());
         return checkMsgMap;
     }
 
@@ -69,14 +70,14 @@ public class UserServiceImpl implements UserService{
         long countedByUserNickname = userRepository.countByNickname(userNickname);
 
         if (userNickname.isEmpty() || userNickname.trim().isEmpty()){
-            throw new IllegalArgumentException("userNickname must not be empty");
+            throw new IllegalArgumentException(UserMessage.NICKNAME_MUST_NOT_BE_EMPTY.message());
         }
 
         if (countedByUserNickname >= 1){
-            throw new IllegalArgumentException("invalid nickname");
+            throw new IllegalArgumentException(UserMessage.INVALID_USER_NICKNAME.message());
         }
 
-        checkMsgMap.put("checkMessage", "available nickname");
+        checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_NICKNAME.message());
         return checkMsgMap;
     }
 
@@ -88,20 +89,19 @@ public class UserServiceImpl implements UserService{
         user.setUserPw(encodedPw);
 
         User joinedUser = userRepository.save(user);
-        joinedUser.setUserPw("");
-        UserResponseDto joinedUserDto = UserMapper.toUserResponseDto(joinedUser);
+//        joinedUser.setUserPw("");
 
-        return joinedUserDto;
+        return UserMapper.toUserResponseDto(joinedUser);
     }
 
     @Override
     public UserResponseDto login(UserRequestDto userRequestDto) {
 
         User foundUser = userRepository.findByUserId(userRequestDto.userId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(UserMessage.USER_NOT_FOUND.message()));
 
         if (!passwordEncoder.matches(userRequestDto.userPw(), foundUser.getUserPw())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException(UserMessage.LOGIN_FAIL.message());
         }
 
         return UserMapper.toUserResponseDto(foundUser);
