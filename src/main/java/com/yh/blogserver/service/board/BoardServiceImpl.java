@@ -7,12 +7,18 @@ import com.yh.blogserver.entity.User;
 import com.yh.blogserver.mapper.BoardMapper;
 import com.yh.blogserver.repository.board.BoardRepository;
 import com.yh.blogserver.service.user.UserService;
+import com.yh.blogserver.util.message.BoardMessage;
+import com.yh.blogserver.util.message.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class BoardServiceImpl implements BoardService{
+public class BoardServiceImpl implements BoardService {
 
+    private static final Logger log = LoggerFactory.getLogger(BoardServiceImpl.class);
     private final BoardRepository boardRepository;
     private final UserService userService;
 
@@ -22,38 +28,39 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public BoardResponseDto createBoard(BoardRequestDto boardRequestDto) {
+    public BoardResponseDto createBoard(BoardRequestDto boardRequestDto, String userId) {
 
-        User user = userService.getUserEntityByUserId(boardRequestDto.user().getUserId());
+        User user = userService.getUserEntityByUserId(userId);
         Board board = BoardMapper.fromDto(boardRequestDto, user);
-        
-        return BoardMapper.toBoardResponseDto(boardRepository.save(board));
-    }
+        boardRepository.save(board);
 
-    @Override
-    public Boolean isWriterOf(Long boardIndex, String userId) {
-        return boardRepository.existsByBoardIndexAndUser_UserId(boardIndex, userId);
-    }
-
-// jpa 변경감지
-// jpa 영속성영역에 올리기위해 조회
-// @Transactional
-    @Override
-    public String updateDeleteFlag(Long boardIndex) {
-        Board board = boardRepository.findById(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        board.markAsDeleted();
-
-        BoardResponseDto deletedBoard = BoardMapper.toBoardResponseDto(boardRepository.saveAndFlush(board));
-        // 스프링 배치 + 스케쥴러 + deleteFlag 이용해서 게시글 지우기
-        // deleteBoard
-//        boardRepository.deleteByBoardIndex(boardDto.boardIndex);
-        return "board deleted";
+        return BoardMapper.toBoardResponseDto(board);
     }
 
     @Override
     public BoardResponseDto getBoard(Long boardIndex) {
         return BoardMapper.toBoardResponseDto(boardRepository.findById(boardIndex)
-                .orElseThrow(()-> new IllegalArgumentException("게시글을 찾을 수 없습니다.")));
+                .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message())));
     }
+
+    // jpa 변경감지
+    @Override
+    @Transactional
+    public void deleteBoard(Long boardIndex, String userId) {
+        Board board = boardRepository.findById(boardIndex)
+                .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message()));
+
+        if (!board.getUser().getUserId().equals(userId)) {
+            log.warn("[BOARD DELETE 실패] userId={} 가 게시글 {} 삭제 시도", userId, boardIndex);
+            throw new IllegalArgumentException(BoardMessage.FORBIDDEN_DELETE.message());
+        }
+
+        if (board.isBoardDeleteFlag()) {
+            log.warn("[BOARD DELETE 실패] 이미 삭제된 게시글입니다. boardIndex={}", boardIndex);
+            throw new IllegalArgumentException(BoardMessage.ALREADY_DELETED.message());
+        }
+        // 스프링 배치 + 스케쥴러 + deleteFlag 이용해서 게시글 지우기
+        board.markAsDeleted();
+    }
+
 }
