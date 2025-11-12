@@ -12,7 +12,6 @@ public record BoardRequestDto(
         String boardTitle,
         String boardContents,
         LocalDateTime boardCreatedTime,
-        Long boardViewCnt,
-        boolean boardDeleteFlag
+        Long boardViewCnt
 ) {
 }
