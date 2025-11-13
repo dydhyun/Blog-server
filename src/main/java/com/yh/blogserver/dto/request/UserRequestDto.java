@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record UserRequestDto(
-        Long userIndex,
+//        Long userIndex,
         String userId,
         String userPw,
         String username,
