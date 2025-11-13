@@ -24,7 +24,7 @@ public class UserMapper {
 
     public static UserRequestDto toUserRequestDto(User user) {
         return UserRequestDto.builder()
-                .userIndex(user.getUserIndex())
+//                .userIndex(user.getUserIndex())
                 .userId(user.getUserId())
                 .userPw(user.getUserPw())
                 .username(user.getUsername())
@@ -38,7 +38,7 @@ public class UserMapper {
 
     public static User fromDto(UserRequestDto dto) {
         return User.builder()
-                .userIndex(dto.userIndex())
+//                .userIndex(dto.userIndex())
                 .userId(dto.userId())
                 .userPw(dto.userPw())
                 .username(dto.username())
