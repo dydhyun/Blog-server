@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+//@RestControllerAdvice(annotations = {RestController.class},
+//        basePackageClasses = {BlogController.class, BoardController.class, MyPageController.class, UserController.class})
+//@RestControllerAdvice(basePackages = "com.yh.blogserver.controller")
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // 200 :
@@ -37,5 +40,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ResponseDto.error(HttpStatus.BAD_REQUEST, e.getMessage()));
     }
+
+    // uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") 요청 처리
+    // swagger 발생가능 예외 :
+    // HttpMessageNotReadableException
+    // NullPointerException
+    // MissingServletRequestParameterException
 
 }
