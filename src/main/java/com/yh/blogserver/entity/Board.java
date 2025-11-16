@@ -1,5 +1,6 @@
 package com.yh.blogserver.entity;
 
+import com.yh.blogserver.dto.request.BoardRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,14 +37,20 @@ public class Board {
 
     private boolean boardDeleteFlag;
 
-    public void markAsDeleted() {
-        this.boardDeleteFlag = true;
-    }
-
     @PrePersist
     private void prePersist(){
         this.boardCreatedTime = LocalDateTime.now();
         this.boardViewCnt = 0L;
         this.boardDeleteFlag = false;
     }
+
+    public void markAsDeleted() {
+        this.boardDeleteFlag = true;
+    }
+
+    public void updateBoard(BoardRequestDto boardRequestDto){
+        this.boardTitle = boardRequestDto.boardTitle();
+        this.boardContents = boardRequestDto.boardContents();
+    }
+
 }
