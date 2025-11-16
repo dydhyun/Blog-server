@@ -50,7 +50,7 @@ public class UserController {
         Map<String, String> checkMsgMap = userService.userIdCheck(userId);
 
         return ResponseEntity
-                .ok(ResponseDto.success(checkMsgMap, HttpStatus.OK, checkMsgMap.get(CHECK_MSG_KEY)));
+                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY)));
     }
 
     @Operation(
@@ -68,7 +68,7 @@ public class UserController {
         Map<String, String> checkMsgMap = userService.userNicknameCheck(userNickname);
 
         return ResponseEntity
-                .ok(ResponseDto.success(checkMsgMap, HttpStatus.OK, checkMsgMap.get(CHECK_MSG_KEY)));
+                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY)));
     }
 
     @Operation(
@@ -96,7 +96,7 @@ public class UserController {
         UserResponseDto userResponseDto = userService.join(userRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(userResponseDto, HttpStatus.CREATED, ResponseMessage.CREATED.message()));
+                .body(ResponseDto.success(userResponseDto, ResponseMessage.CREATED.message()));
     }
 
     @Operation(
@@ -124,7 +124,7 @@ public class UserController {
         // http 표준 규약 -> Authorization: <type> <credentials>
 
         return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders)
-                .body(ResponseDto.success(loginedUserDto, HttpStatus.OK, ResponseMessage.OK.message()));
+                .body(ResponseDto.success(loginedUserDto, ResponseMessage.OK.message()));
     }
 
 }

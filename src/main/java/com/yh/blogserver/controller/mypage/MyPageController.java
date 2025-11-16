@@ -5,12 +5,12 @@ import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/myPage")
 public class MyPageController {
 
@@ -24,21 +24,21 @@ public class MyPageController {
     public ResponseEntity<ResponseDto<UserResponseDto>> getMyPage(){
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null,HttpStatus.OK,""));
+                .body(ResponseDto.success(null,""));
     }
 
     @PatchMapping("")
     public ResponseEntity<ResponseDto<UserResponseDto>> patchMyPage(){
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null,HttpStatus.OK,""));
+                .body(ResponseDto.success(null,""));
     }
 
     @PatchMapping("/delete")
     public ResponseEntity<ResponseDto<UserResponseDto>> deleteMyAccount(){
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null,HttpStatus.OK,""));
+                .body(ResponseDto.success(null,""));
     }
 
 

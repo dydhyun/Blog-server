@@ -31,14 +31,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDto<?>> handleIllegalArgument(IllegalArgumentException e) {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseDto.error(HttpStatus.BAD_REQUEST, e.getMessage()));
+                .body(ResponseDto.error(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto<?>> handleGeneralException(Exception e) {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseDto.error(HttpStatus.BAD_REQUEST, e.getMessage()));
+                .body(ResponseDto.error(e.getMessage()));
     }
 
     // uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") 요청 처리

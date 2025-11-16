@@ -54,7 +54,7 @@ public class BoardController {
                 boardService.createBoard(boardRequestDto, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(createdBoard, HttpStatus.CREATED, ResponseMessage.CREATED.message()));
+                .body(ResponseDto.success(createdBoard, ResponseMessage.CREATED.message()));
     }
 
 
@@ -83,7 +83,7 @@ public class BoardController {
         log.info("[BOARD UPDATE 성공] userId={} 가 boardIndex={} 갱신", userId, boardIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(updatedBoard, HttpStatus.OK, ResponseMessage.UPDATED.message()));
+                .body(ResponseDto.success(updatedBoard, ResponseMessage.UPDATED.message()));
     }
 
     @Operation(
@@ -112,7 +112,7 @@ public class BoardController {
         log.info("[BOARD DELETE 성공] userId={} 가 boardIndex={} 삭제", userId, boardIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, HttpStatus.OK, ResponseMessage.DELETED.message()));
+                .body(ResponseDto.success(null, ResponseMessage.DELETED.message()));
     }// 204 NO_CONTENT 는 body가 없음. -> ResponseEntity.noContent().build()
 
 
