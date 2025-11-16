@@ -46,8 +46,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Map<String, String> userPwCheck(String userPw) {
-        HashMap<String, String> checkMsgMap = new HashMap<>();
+    public Boolean userPwCheck(String userPw) {
 
         if (userPw.isEmpty() || userPw.trim().isEmpty()){
             throw new IllegalArgumentException(UserMessage.PASSWORD_MUST_NOT_BE_EMPTY.message());
@@ -59,8 +58,7 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다.");
         }
 
-        checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_PW.message());
-        return checkMsgMap;
+        return true;
     }
 
     @Override
