@@ -43,6 +43,18 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message())));
     }
 
+    @Override
+    @Transactional
+    public BoardResponseDto updateBoard(Long boardIndex, BoardRequestDto boardRequestDto, String userId) {
+        Board board = boardRepository.findById(boardIndex)
+                .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message()));
+
+        isWriter(board,userId);
+        board.updateBoard(boardRequestDto);
+
+        return BoardMapper.toBoardResponseDto(board);
+    }
+
     // jpa 변경감지
     @Override
     @Transactional
@@ -50,10 +62,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardIndex)
                 .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message()));
 
-        if (!board.getUser().getUserId().equals(userId)) {
-            log.warn("[BOARD DELETE 실패] userId={} 가 게시글 {} 삭제 시도", userId, boardIndex);
-            throw new IllegalArgumentException(BoardMessage.FORBIDDEN_DELETE.message());
-        }
+        isWriter(board,userId);
 
         if (board.isBoardDeleteFlag()) {
             log.warn("[BOARD DELETE 실패] 이미 삭제된 게시글입니다. boardIndex={}", boardIndex);
@@ -63,4 +72,13 @@ public class BoardServiceImpl implements BoardService {
         board.markAsDeleted();
     }
 
+    @Override
+    public Boolean isWriter(Board board, String userId) {
+
+        if (board.getUser().getUserId().equals(userId)) {
+            return true;
+        }
+        log.warn("[게시글 작성자 확인 실패] userId={} , boardIndex={} ", userId, board.getBoardIndex());
+        throw new IllegalArgumentException(BoardMessage.WRONG_WRITER.message());
+    }
 }
