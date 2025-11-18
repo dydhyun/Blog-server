@@ -40,8 +40,7 @@ public class BoardController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "글 작성 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 (DTO 형식 오류 등)"),
-            @ApiResponse(responseCode = "401", description = "인증 실패 (JWT 누락 또는 만료)")
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 (DTO 형식 오류 등)")
     })
     @PostMapping("")
     public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@RequestHeader(value = "Authorization") String token,
@@ -54,7 +53,7 @@ public class BoardController {
                 boardService.createBoard(boardRequestDto, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(createdBoard, ResponseMessage.CREATED.message()));
+                .body(ResponseDto.success(createdBoard, ResponseMessage.CREATED.message(),HttpStatus.CREATED.value()));
     }
 
 
@@ -67,8 +66,7 @@ public class BoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "글 수정 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패 (JWT 관련)"),
-            @ApiResponse(responseCode = "403", description = "본인 글이 아님"),
+            @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @PatchMapping("/{boardIndex}")
@@ -83,7 +81,7 @@ public class BoardController {
         log.info("[BOARD UPDATE 성공] userId={} 가 boardIndex={} 갱신", userId, boardIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(updatedBoard, ResponseMessage.UPDATED.message()));
+                .body(ResponseDto.success(updatedBoard, ResponseMessage.UPDATED.message(), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -96,8 +94,7 @@ public class BoardController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "글 삭제 성공"),
             @ApiResponse(responseCode = "400", description = "이미 삭제된 게시글"),
-            @ApiResponse(responseCode = "401", description = "인증 실패 (JWT 관련)"),
-            @ApiResponse(responseCode = "403", description = "본인 글이 아님"),
+            @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @DeleteMapping("/{boardIndex}")
@@ -112,7 +109,7 @@ public class BoardController {
         log.info("[BOARD DELETE 성공] userId={} 가 boardIndex={} 삭제", userId, boardIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, ResponseMessage.DELETED.message()));
+                .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
     }// 204 NO_CONTENT 는 body가 없음. -> ResponseEntity.noContent().build()
 
 

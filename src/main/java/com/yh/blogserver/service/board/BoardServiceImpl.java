@@ -4,11 +4,11 @@ import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.entity.Board;
 import com.yh.blogserver.entity.User;
+import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.mapper.BoardMapper;
 import com.yh.blogserver.repository.board.BoardRepository;
 import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.BoardMessage;
-import com.yh.blogserver.util.message.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,26 +28,32 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponseDto createBoard(BoardRequestDto boardRequestDto, String userId) {
+
+        if (boardRequestDto.boardTitle().trim().isEmpty() || boardRequestDto.boardContents().trim().isEmpty()){
+            log.warn("[BOARD CREATE 실패] userId={} 게시글제목 혹은 내용이 비어있습니다.", userId);
+            throw new CustomException(BoardMessage.BOARD_CAN_NOT_EMPTY);
+        }
 
         User user = userService.getUserEntityByUserId(userId);
         Board board = BoardMapper.fromDto(boardRequestDto, user);
-        boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
 
-        return BoardMapper.toBoardResponseDto(board);
+        return BoardMapper.toBoardResponseDto(savedBoard);
     }
 
     @Override
     public BoardResponseDto getBoard(Long boardIndex) {
         return BoardMapper.toBoardResponseDto(boardRepository.findById(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message())));
+                .orElseThrow(() -> new CustomException(BoardMessage.BOARD_NOT_FOUND)));
     }
 
     @Override
     @Transactional
     public BoardResponseDto updateBoard(Long boardIndex, BoardRequestDto boardRequestDto, String userId) {
         Board board = boardRepository.findById(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message()));
+                .orElseThrow(() -> new CustomException(BoardMessage.BOARD_NOT_FOUND));
 
         isWriter(board,userId);
         board.updateBoard(boardRequestDto);
@@ -60,13 +66,13 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public void deleteBoard(Long boardIndex, String userId) {
         Board board = boardRepository.findById(boardIndex)
-                .orElseThrow(() -> new IllegalArgumentException(BoardMessage.BOARD_NOT_FOUND.message()));
+                .orElseThrow(() -> new CustomException(BoardMessage.BOARD_NOT_FOUND));
 
         isWriter(board,userId);
 
         if (board.isBoardDeleteFlag()) {
             log.warn("[BOARD DELETE 실패] 이미 삭제된 게시글입니다. boardIndex={}", boardIndex);
-            throw new IllegalArgumentException(BoardMessage.ALREADY_DELETED.message());
+            throw new CustomException(BoardMessage.ALREADY_DELETED);
         }
         // 스프링 배치 + 스케쥴러 + deleteFlag 이용해서 게시글 지우기
         board.markAsDeleted();
@@ -79,6 +85,6 @@ public class BoardServiceImpl implements BoardService {
             return true;
         }
         log.warn("[게시글 작성자 확인 실패] userId={} , boardIndex={} ", userId, board.getBoardIndex());
-        throw new IllegalArgumentException(BoardMessage.WRONG_WRITER.message());
+        throw new CustomException(BoardMessage.WRONG_WRITER);
     }
 }
