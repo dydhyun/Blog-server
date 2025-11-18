@@ -50,7 +50,7 @@ public class UserController {
         Map<String, String> checkMsgMap = userService.userIdCheck(userId);
 
         return ResponseEntity
-                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY)));
+                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -68,7 +68,7 @@ public class UserController {
         Map<String, String> checkMsgMap = userService.userNicknameCheck(userNickname);
 
         return ResponseEntity
-                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY)));
+                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -81,11 +81,14 @@ public class UserController {
                 
                 검증이 통과하면 DB에 계정을 생성하고
                 생성된 유저 정보를 UserResponseDto로 반환합니다.
+                
+                회원가입은 아이디, 닉네임, 비밀번호 검증이 끝난 후에 가능하며,
+                이전엔 프론트에서 요청을 막아둡니다.
                 """
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "회원가입 실패")
+            @ApiResponse(responseCode = "403", description = "회원가입 실패")
     })
     @PostMapping("")
     public ResponseEntity<ResponseDto<UserResponseDto>> join(@RequestBody UserRequestDto userRequestDto){
@@ -96,7 +99,7 @@ public class UserController {
         UserResponseDto userResponseDto = userService.join(userRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(userResponseDto, ResponseMessage.CREATED.message()));
+                .body(ResponseDto.success(userResponseDto, ResponseMessage.CREATED.message(), HttpStatus.CREATED.value()));
     }
 
     @Operation(
@@ -124,7 +127,7 @@ public class UserController {
         // http 표준 규약 -> Authorization: <type> <credentials>
 
         return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders)
-                .body(ResponseDto.success(loginedUserDto, ResponseMessage.OK.message()));
+                .body(ResponseDto.success(loginedUserDto, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
 }

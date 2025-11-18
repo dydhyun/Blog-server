@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
+import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
 import com.yh.blogserver.util.message.UserMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService{
 
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -31,14 +35,20 @@ public class UserServiceImpl implements UserService{
     public Map<String, String> userIdCheck(String userId) {
         HashMap<String, String> checkMsgMap = new HashMap<>();
 
-        if (userId == null || userId.trim().isEmpty()) {
-            throw new IllegalArgumentException(UserMessage.ID_MUST_NOT_BE_EMPTY.message());
+        if (userId.contains(" ")){
+            throw new CustomException(UserMessage.ID_CAN_NOT_INCLUDE_SPACE);
+        }
+        if (userId.isEmpty()) {
+            throw new CustomException(UserMessage.ID_MUST_NOT_BE_EMPTY);
+        }
+        if (userId.length() < 8){
+            throw new CustomException(UserMessage.ID_CAN_NOT_UNDER_8);
         }
 
         long countedByUserId = userRepository.countByUserId(userId);
 
         if (countedByUserId >= 1) {
-            throw new IllegalStateException(UserMessage.INVALID_USER_ID.message());
+            throw new CustomException(UserMessage.INVALID_USER_ID);
         }
 
         checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_ID.message());
@@ -49,13 +59,13 @@ public class UserServiceImpl implements UserService{
     public Boolean userPwCheck(String userPw) {
 
         if (userPw.isEmpty() || userPw.trim().isEmpty()){
-            throw new IllegalArgumentException(UserMessage.PASSWORD_MUST_NOT_BE_EMPTY.message());
+            throw new CustomException(UserMessage.PASSWORD_MUST_NOT_BE_EMPTY);
         }
         if (16 < userPw.length() || userPw.length() < 8){
-            throw new IllegalArgumentException(UserMessage.PASSWORD_LENGTH_MESSAGE.message());
+            throw new CustomException(UserMessage.PASSWORD_LENGTH_MESSAGE);
         }
         if (!userPw.matches(".*[`~!@#$%^&*()_+=.,].*")) {
-            throw new IllegalArgumentException("비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다.");
+            throw new CustomException(UserMessage.PASSWORD_NOT_VALID_MESSAGE);
         }
 
         return true;
@@ -68,11 +78,11 @@ public class UserServiceImpl implements UserService{
         long countedByUserNickname = userRepository.countByNickname(userNickname);
 
         if (userNickname.isEmpty() || userNickname.trim().isEmpty()){
-            throw new IllegalArgumentException(UserMessage.NICKNAME_MUST_NOT_BE_EMPTY.message());
+            throw new CustomException(UserMessage.NICKNAME_MUST_NOT_BE_EMPTY);
         }
 
         if (countedByUserNickname >= 1){
-            throw new IllegalArgumentException(UserMessage.INVALID_USER_NICKNAME.message());
+            throw new CustomException(UserMessage.INVALID_USER_NICKNAME);
         }
 
         checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_NICKNAME.message());
@@ -96,10 +106,10 @@ public class UserServiceImpl implements UserService{
     public UserResponseDto login(UserRequestDto userRequestDto) {
 
         User foundUser = userRepository.findByUserId(userRequestDto.userId())
-                .orElseThrow(() -> new IllegalArgumentException(UserMessage.USER_NOT_FOUND.message()));
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(userRequestDto.userPw(), foundUser.getUserPw())){
-            throw new IllegalArgumentException(UserMessage.LOGIN_FAIL.message());
+            throw new CustomException(UserMessage.LOGIN_FAIL);
         }
 
         return UserMapper.toUserResponseDto(foundUser);
@@ -130,7 +140,8 @@ public class UserServiceImpl implements UserService{
         try {
             payloadMap = mapper.readValue(payloadJson, Map.class);
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException(e);
+            log.error(e.getMessage());
+            throw new CustomException(UserMessage.AUTHENTICATED_USER_FAIL);
         }
 
         String userId = (String) payloadMap.get("userId");
