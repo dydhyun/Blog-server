@@ -13,13 +13,19 @@ public record ResponseDto<T> (
         String message,
 
         @Schema(description = "응답 코드")
-        int responseCode
+        String responseCode
 ) {
-    public static <T> ResponseDto<T> success(T data, String message, int responseCode) {
+    public static <T> ResponseDto<T> success(T data, String message, String responseCode) {
         return new ResponseDto<>(data, message, responseCode);
     }
+    public static <T> ResponseDto<T> success(T data, String message, int responseCode) {
+        return new ResponseDto<>(data, message, String.valueOf(responseCode));
+    }
 
-    public static <T> ResponseDto<T> error(String message, int responseCode) {
+    public static <T> ResponseDto<T> error(String message, String responseCode) {
         return new ResponseDto<>(null, message, responseCode);
+    }
+    public static <T> ResponseDto<T> error(String message, int responseCode) {
+        return new ResponseDto<>(null, message, String.valueOf(responseCode));
     }
 }
