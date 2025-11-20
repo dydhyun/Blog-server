@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService{
         HashMap<String, String> checkMsgMap = new HashMap<>();
 
         if (userId.contains(" ")){
-            throw new CustomException(UserMessage.ID_CAN_NOT_INCLUDE_SPACE);
+            throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
         }
         if (userId.isEmpty()) {
             throw new CustomException(UserMessage.ID_MUST_NOT_BE_EMPTY);
@@ -58,13 +58,16 @@ public class UserServiceImpl implements UserService{
     @Override
     public Boolean userPwCheck(String userPw) {
 
-        if (userPw.isEmpty() || userPw.trim().isEmpty()){
+        if (userPw.contains(" ")){
+            throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
+        }
+        if (userPw.isEmpty()){
             throw new CustomException(UserMessage.PASSWORD_MUST_NOT_BE_EMPTY);
         }
         if (16 < userPw.length() || userPw.length() < 8){
             throw new CustomException(UserMessage.PASSWORD_LENGTH_MESSAGE);
         }
-        if (!userPw.matches(".*[`~!@#$%^&*()_+=.,].*")) {
+        if (!userPw.matches(".*[`~!@#$%^&*()_=.,].*")) {
             throw new CustomException(UserMessage.PASSWORD_NOT_VALID_MESSAGE);
         }
 
@@ -77,7 +80,10 @@ public class UserServiceImpl implements UserService{
 
         long countedByUserNickname = userRepository.countByNickname(userNickname);
 
-        if (userNickname.isEmpty() || userNickname.trim().isEmpty()){
+        if (userNickname.contains(" ")){
+            throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
+        }
+        if (userNickname.isEmpty()){
             throw new CustomException(UserMessage.NICKNAME_MUST_NOT_BE_EMPTY);
         }
 
