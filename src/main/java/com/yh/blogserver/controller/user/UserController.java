@@ -6,6 +6,7 @@ import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.ResponseMessage;
+import com.yh.blogserver.util.message.UserMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -99,7 +100,7 @@ public class UserController {
         UserResponseDto userResponseDto = userService.join(userRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(userResponseDto, ResponseMessage.CREATED.message(), HttpStatus.CREATED.value()));
+                .body(ResponseDto.success(userResponseDto, UserMessage.JOIN_SUCCESS.message(), HttpStatus.CREATED.value()));
     }
 
     @Operation(
@@ -127,7 +128,7 @@ public class UserController {
         // http 표준 규약 -> Authorization: <type> <credentials>
 
         return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders)
-                .body(ResponseDto.success(loginedUserDto, ResponseMessage.OK.message(), HttpStatus.OK.value()));
+                .body(ResponseDto.success(loginedUserDto, UserMessage.LOGGED_IN.message(), HttpStatus.OK.value()));
     }
 
 }
