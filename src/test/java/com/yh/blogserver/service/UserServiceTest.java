@@ -5,7 +5,10 @@ import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.repository.user.UserRepository;
 import com.yh.blogserver.service.user.UserServiceImpl;
 import com.yh.blogserver.util.message.UserMessage;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -205,6 +209,25 @@ public class UserServiceTest {
                 Arguments.of("passwordOver16words!1", UserMessage.PASSWORD_LENGTH_MESSAGE.message()),
                 Arguments.of("noContainKey", UserMessage.PASSWORD_NOT_VALID_MESSAGE.message())
         );
+    }
+    @TestFactory
+    @DisplayName("패스워드 검증 실패 케이스 Dynamic 테스트")
+    Collection<DynamicTest> dynamicPasswordFailTests() {
+        return passwordFailCases()
+                .map(args -> {
+                    String input = (String) args.get()[0];
+                    String expectedMessage = (String) args.get()[1];
+
+                    return DynamicTest.dynamicTest(
+                            "입력: \"" + input + "\" → 기대 메시지: \"" + expectedMessage + "\"",
+                            () -> {
+                                CustomException exception = assertThrows(CustomException.class,
+                                        () -> userService.userPwCheck(input));
+                                assertEquals(expectedMessage, exception.getMessage());
+                            }
+                    );
+                })
+                .toList();
     }
 
     @ParameterizedTest
