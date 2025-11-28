@@ -1,6 +1,9 @@
 package com.yh.blogserver.service;
 
 
+import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.response.UserResponseDto;
+import com.yh.blogserver.entity.User;
 import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.repository.user.UserRepository;
 import com.yh.blogserver.service.user.UserServiceImpl;
@@ -14,13 +17,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +38,9 @@ public class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @InjectMocks
     UserServiceImpl userService;
@@ -160,6 +170,11 @@ public class UserServiceTest {
         } else {
             BDDMockito.verify(userRepository, BDDMockito.never()).countByNickname(anyString());
         }
+        // userRepository mock 객체에서 메서드 호출여부 검증하겠다 선언,
+        // 실제로 DB에 접근하지 않고, Mockito가 가짜 객체로 트래킹한 호출 기록을 확인
+        // 중복 케이스의 경우 userRepository의 countByNickname() 이 호출됬는지 검증하고,
+        // 중복 케이스가 아닌경우 BDDMockito.never() 메서드를 통해
+        // userRepository의 countByNickname() 이 호출되지 않았는지 검증.
     }
 
     private static Stream<Arguments> nicknameFailCases() {
@@ -256,19 +271,195 @@ public class UserServiceTest {
 
 //********************************* join,login,jwt *********************************
 
-    @Test
-    void joinTest_실패(){
-        // given
+    private final UserRequestDto failUserRequestDto
+            = UserRequestDto.builder()
+            .userId("invalidUserID")
+            .userPw("invalidPassword")
+            .username("용현")
+            .nickname("실패케이스")
+            .address("address")
+            .addressDetail("detail")
+            .pNumber("01012345678")
+            .email("dydgus625@naver.com")
+            .build();
 
-        // when
-        // then
+    private final UserRequestDto successUserRequestDto
+            = UserRequestDto.builder()
+            .userId("validUserID")
+            .userPw("validPw!1")
+            .username("용현")
+            .nickname("성공케이스")
+            .address("address")
+            .addressDetail("detail")
+            .pNumber("01012345678")
+            .email("dydgus625@naver.com")
+            .build();
 
-    }
+    // 1. 패스워드 인코딩되어 세팅되는지
+    // 2. db 저장 동작하는지
+    // 3. 반환값 매핑 정상동작 하는지
     @Test
     void joinTest_성공(){
         // given
+        UserRequestDto requestDto = successUserRequestDto;
+        System.out.println("===== 테스트 시작 =====");
+        System.out.println("입력값: " + requestDto);
+
+        // 패스워드 인코딩 mocking
+        BDDMockito.given(passwordEncoder.encode(requestDto.userPw()))
+                .willReturn("encodedPassword");
+
+        // save() 호출 시 User 객체를 캡쳐
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        BDDMockito.given(userRepository.save(captor.capture()))
+                .willAnswer(invocation -> invocation.getArgument(0));
+
         // when
+        UserResponseDto responseDto = userService.join(requestDto);
+
         // then
+        assertNotNull(responseDto);
+        assertEquals(requestDto.nickname(), responseDto.nickname());
+        assertEquals(requestDto.userId(), responseDto.userId());
+
+        // 패스워드 인코딩여부 확인을 위해 save()에 전달된 User 객체 검증
+        User savedUser = captor.getValue();
+        assertEquals("encodedPassword", savedUser.getUserPw());
+
+        BDDMockito.then(userRepository).should().save(BDDMockito.any(User.class));
+        System.out.println("실제 결과: " + responseDto);
+        System.out.println("======================");
     }
+
+
+    @Test
+    void loginTest_존재하지않는유저(){
+        // given
+        UserRequestDto requestDto = failUserRequestDto;
+        System.out.println("===== 테스트 시작 =====");
+        System.out.println("입력값: " + requestDto);
+        System.out.println("기대값: " + UserMessage.USER_NOT_FOUND.message());
+
+        BDDMockito.given(userRepository.findByUserId(failUserRequestDto.userId())).willReturn(Optional.empty());
+
+        // when
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            userService.login(requestDto);
+        });
+
+        // then
+        assertEquals(UserMessage.USER_NOT_FOUND.message(),exception.getMessage());
+        BDDMockito.verify(passwordEncoder, BDDMockito.never()).matches(anyString(), anyString());
+        System.out.println("실제 결과: " + exception.getMessage());
+        System.out.println("======================");
+    }
+
+    @Test
+    void loginTest_패스워드불일치(){
+        // given
+        UserRequestDto requestDto = failUserRequestDto;
+        System.out.println("===== 테스트 시작 =====");
+        System.out.println("입력값: " + requestDto);
+        System.out.println("기대값: " + UserMessage.LOGIN_FAIL.message());
+
+        User mockUser = User.builder()
+                .userId("user1")
+                .userPw("encodedPw")
+                .build();
+
+        BDDMockito.given(userRepository.findByUserId(failUserRequestDto.userId()))
+                .willReturn(Optional.of(mockUser));
+
+        BDDMockito.given(passwordEncoder.matches(requestDto.userPw(),"encodedPw"))
+                .willReturn(false);
+
+        // when
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            userService.login(requestDto);
+        });
+
+        // then
+        assertEquals(UserMessage.LOGIN_FAIL.message(), exception.getMessage());
+        System.out.println("실제 결과: " + exception.getMessage());
+        System.out.println("======================");
+    }
+    @Test
+    void loginTest_로그인성공(){
+        // given
+        UserRequestDto requestDto = successUserRequestDto;
+        System.out.println("===== 테스트 시작 =====");
+        System.out.println("입력값: " + requestDto);
+
+        User mockUser = User.builder()
+                .userId(requestDto.userId())
+                .userPw("encodedPw")  // 인코딩된 비밀번호라고 가정
+                .nickname(requestDto.nickname())
+                .email(requestDto.email())
+                .build();
+
+        BDDMockito.given(userRepository.findByUserId(requestDto.userId()))
+                .willReturn(Optional.of(mockUser));
+
+        BDDMockito.given(passwordEncoder.matches(requestDto.userPw(), "encodedPw"))
+                .willReturn(true);
+
+        // when
+        UserResponseDto response = userService.login(requestDto);
+
+        // then
+        assertNotNull(response);
+        assertEquals(requestDto.userId(), response.userId());
+        assertEquals(requestDto.nickname(), response.nickname());
+        assertEquals(requestDto.email(), response.email());
+
+        System.out.println("실제 결과: " + response.userId());
+        System.out.println("실제 결과: " + mockUser.getUserPw());
+        System.out.println("======================");
+
+        // verify: 메서드 호출되었는지 검증
+        BDDMockito.verify(userRepository).findByUserId(requestDto.userId());
+        BDDMockito.verify(passwordEncoder).matches(requestDto.userPw(), "encodedPw");
+    }
+
+    @Test
+    void authenticatedUser_정상토큰() throws Exception {
+        // given
+        String payloadJson = "{\"userId\":\"testUser\"}";
+        String base64Payload = Base64.getEncoder().encodeToString(payloadJson.getBytes());
+
+        String token = "header." + base64Payload + ".signature";
+        System.out.println("===== 테스트 시작 =====");
+        System.out.println("입력값: " + token);
+
+        // when
+        String userId = userService.authenticatedUser(token);
+
+        // then
+        assertEquals("testUser", userId);
+        System.out.println("실제 결과: " + userId);
+        System.out.println("======================");
+    }
+
+    @Test
+    void authenticatedUser_JSON파싱실패() {
+        // given
+        String brokenPayload = "not-a-json";
+        String base64Payload = Base64.getEncoder().encodeToString(brokenPayload.getBytes());
+
+        String token = "header." + base64Payload + ".signature";
+        System.out.println("===== 테스트 시작 =====");
+        System.out.println("입력값: " + token);
+
+        // when & then
+        CustomException exception = assertThrows(CustomException.class, () ->
+                userService.authenticatedUser(token)
+        );
+
+        assertEquals(UserMessage.AUTHENTICATED_USER_FAIL.message(), exception.getMessage());
+        System.out.println("실제 결과: " + exception.getMessage());
+        System.out.println("======================");
+    }
+
+
 
 }
