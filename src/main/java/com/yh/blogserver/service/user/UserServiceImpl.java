@@ -78,14 +78,14 @@ public class UserServiceImpl implements UserService{
     public Map<String, String> userNicknameCheck(String userNickname) {
         HashMap<String, String> checkMsgMap = new HashMap<>();
 
-        long countedByUserNickname = userRepository.countByNickname(userNickname);
-
         if (userNickname.contains(" ")){
             throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
         }
         if (userNickname.isEmpty()){
             throw new CustomException(UserMessage.NICKNAME_MUST_NOT_BE_EMPTY);
         }
+
+        long countedByUserNickname = userRepository.countByNickname(userNickname);
 
         if (countedByUserNickname >= 1){
             throw new CustomException(UserMessage.INVALID_USER_NICKNAME);

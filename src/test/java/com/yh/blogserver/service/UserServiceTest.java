@@ -140,11 +140,11 @@ public class UserServiceTest {
     @ParameterizedTest(name = "[{index}] 입력=\"{0}\" → 기대 메시지=\"{1}\"")
     @MethodSource("nicknameFailCases")
     void userNickname_실패케이스(String input, String expectedMessage) {
-        // given
-        if (input.equals("duplicatedNickname")) {
-            BDDMockito.when(userRepository.countByNickname("duplicatedNickname")).thenReturn(1L);
-        } else {
-            BDDMockito.when(userRepository.countByNickname(anyString())).thenReturn(0L);
+        // given: DB 호출이 필요한 경우만 stub
+        boolean isDuplicateCase = input.equals("duplicatedNickname");
+
+        if (isDuplicateCase) {
+            BDDMockito.given(userRepository.countByNickname(input)).willReturn(1L);
         }
 
         // when
@@ -154,6 +154,12 @@ public class UserServiceTest {
 
         // then
         assertEquals(expectedMessage, exception.getMessage());
+
+        if (isDuplicateCase) {
+            BDDMockito.verify(userRepository).countByNickname(input);
+        } else {
+            BDDMockito.verify(userRepository, BDDMockito.never()).countByNickname(anyString());
+        }
     }
 
     private static Stream<Arguments> nicknameFailCases() {
@@ -250,5 +256,19 @@ public class UserServiceTest {
 
 //********************************* join,login,jwt *********************************
 
+    @Test
+    void joinTest_실패(){
+        // given
+
+        // when
+        // then
+
+    }
+    @Test
+    void joinTest_성공(){
+        // given
+        // when
+        // then
+    }
 
 }
