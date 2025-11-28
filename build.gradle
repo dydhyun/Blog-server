@@ -14,6 +14,18 @@ java {
     }
 }
 
+test {
+    testLogging {
+//        events "passed", "failed", "skipped"
+//        -> gradle 리포트로 경고 : [Incubating] Problems report is available at: file:///C:/...
+        events = ["passed", "failed", "skipped"] // 최신 문법
+        exceptionFormat "full"
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
