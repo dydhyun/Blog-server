@@ -1,5 +1,7 @@
 package com.yh.blogserver.config;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -73,10 +75,12 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("TOKEN_EXPIRED");
+        } catch (JwtException e) {
+            throw new JwtException("INVALID_TOKEN");
         } catch (Exception e) {
             return false;
-//        } catch (ExpiredJwtException e){
-//            exception 처리 생각하기
         }
     }
 
