@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Board API", description = "게시글 CRUD 관련 API")
@@ -43,10 +44,9 @@ public class BoardController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 (DTO 형식 오류 등)")
     })
     @PostMapping("")
-    public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@AuthenticationPrincipal String userId,
                                                                      @RequestBody BoardRequestDto boardRequestDto){
 
-        String userId = userService.authenticatedUser(token);
         log.info("[BOARD CREATE 요청] boardTitle={}, userId={}", boardRequestDto.boardTitle(), userId);
 
         BoardResponseDto createdBoard =
@@ -70,10 +70,10 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @PatchMapping("/{boardIndex}")
-    public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(@AuthenticationPrincipal String userId,
                                                                      @PathVariable Long boardIndex,
                                                                      @RequestBody BoardRequestDto boardRequestDto){
-        String userId = userService.authenticatedUser(token);
+
         log.info("[BOARD UPDATE 요청] boardIndex={}, userId={}", boardIndex, userId);
 
         BoardResponseDto updatedBoard = boardService.updateBoard(boardIndex, boardRequestDto, userId);
@@ -98,10 +98,9 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @DeleteMapping("/{boardIndex}")
-    public ResponseEntity<ResponseDto<Void>> deleteBoard(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<ResponseDto<Void>> deleteBoard(@AuthenticationPrincipal String userId,
                                                          @PathVariable Long boardIndex){
 
-        String userId = userService.authenticatedUser(token);
         log.info("[BOARD DELETE 요청] boardIndex={}, userId={}", boardIndex, userId);
 
         boardService.deleteBoard(boardIndex, userId);
@@ -111,6 +110,6 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
     }// 204 NO_CONTENT 는 body가 없음. -> ResponseEntity.noContent().build()
-
+// userService 생성자주입 확인하기
 
 }
