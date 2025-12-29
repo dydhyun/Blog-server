@@ -5,11 +5,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -27,6 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        log.info("[JWT FILTER] method={}, uri={}, Authorization={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getHeader("Authorization"));
 
         String token = parseJwt(request);
 
@@ -40,12 +50,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             jwtTokenProvider.validateToken(token);
         } catch (JwtException e) {
+            SecurityContextHolder.clearContext();
+            // Spring Security는 ThreadLocal 기반이기 때문에
+            // 인증 실패 시 SecurityContext를 명시적으로 정리하지 않으면
+            // 이전 요청의 인증 정보가 남아 보안 이슈로 이어질 수 있음
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("""
-            {"message": "인증 토큰이 유효하지 않습니다"}
+            {"message": "Invalid JWT"}
             """);
+            log.error("[JwtException] exception={}", e.getMessage());
             return;
+            //AuthenticationEntryPoint 역할분리.
+
             //SpringMVC 를 타지않고,
             //다음과 같이 응답을 만들어 클라이언트에 즉시 응답함.
             //HTTP/1.1 401 Unauthorized
@@ -77,6 +94,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        log.info("[JWT FILTER END] authentication={}", auth);
+
 
         filterChain.doFilter(request, response);
     }
