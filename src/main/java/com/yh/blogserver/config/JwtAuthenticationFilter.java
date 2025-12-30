@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token == null) {
             //토큰이 없는 요청은 인증 대상이 아니므로
             //불필요한 JWT 검증 로직을 타지 않도록 early return
+            SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);
             return;
         }
