@@ -76,11 +76,11 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
             return true;
         } catch (ExpiredJwtException e) {
-            throw new JwtException("TOKEN_EXPIRED");
+            throw new JwtException("TOKEN_EXPIRED", e);
         } catch (JwtException e) {
-            throw new JwtException("INVALID_TOKEN");
+            throw new JwtException("INVALID_TOKEN", e);
         } catch (Exception e) {
-            return false;
+            throw new JwtException("TOKEN_VALIDATION_ERROR", e);
         }
     }
 
