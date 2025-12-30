@@ -16,8 +16,8 @@ public class SecurityConfig {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/board/create").authenticated()
-                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .requestMatchers("/boards/**").authenticated()
+                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 //                        /api/admin/** 접근 권한은 서비스 레이어에서 isAdmin 검사로 처리/ 아니고 filter 에서 토큰값확인
                                 .anyRequest().permitAll()
                 )
