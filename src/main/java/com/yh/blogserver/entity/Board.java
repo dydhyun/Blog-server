@@ -36,6 +36,7 @@ public class Board {
     private Long boardViewCnt;
 
     private boolean boardDeleteFlag;
+    private LocalDateTime boardDeletedAt = null;
 
     @PrePersist
     private void prePersist(){
@@ -46,6 +47,7 @@ public class Board {
 
     public void markAsDeleted() {
         this.boardDeleteFlag = true;
+        this.boardDeletedAt = LocalDateTime.now();
     }
 
     public void updateBoard(BoardRequestDto boardRequestDto){
