@@ -2,6 +2,7 @@ package com.yh.blogserver.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,7 @@ public class SecurityConfig {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                                .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
                                 .requestMatchers("/boards/**").authenticated()
                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 //                        /api/admin/** 접근 권한은 서비스 레이어에서 isAdmin 검사로 처리/ 아니고 filter 에서 토큰값확인
