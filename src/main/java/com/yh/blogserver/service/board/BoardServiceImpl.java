@@ -1,6 +1,7 @@
 package com.yh.blogserver.service.board;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
+import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.entity.Board;
 import com.yh.blogserver.entity.User;
@@ -9,16 +10,18 @@ import com.yh.blogserver.mapper.BoardMapper;
 import com.yh.blogserver.repository.board.BoardRepository;
 import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.BoardMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 
+
+@Slf4j
 @Service
 public class BoardServiceImpl implements BoardService {
 
-    private static final Logger log = LoggerFactory.getLogger(BoardServiceImpl.class);
     private final BoardRepository boardRepository;
     private final UserService userService;
 
@@ -74,7 +77,7 @@ public class BoardServiceImpl implements BoardService {
             log.warn("[BOARD DELETE 실패] 이미 삭제된 게시글입니다. boardIndex={}", boardIndex);
             throw new CustomException(BoardMessage.ALREADY_DELETED);
         }
-        // 스프링 배치 + 스케쥴러 + deleteFlag 이용해서 게시글 지우기
+
         board.markAsDeleted();
     }
 
@@ -86,5 +89,23 @@ public class BoardServiceImpl implements BoardService {
         }
         log.warn("[게시글 작성자 확인 실패] userId={} , boardIndex={} ", userId, board.getBoardIndex());
         throw new CustomException(BoardMessage.WRONG_WRITER);
+    }
+
+    @Override
+    public Page<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable) {
+        if (keyword.trim().isEmpty()){
+            throw new CustomException(BoardMessage.BOARD_CAN_NOT_EMPTY);
+        }
+
+        Page<Board> boards = switch (searchCondition){
+            case TITLE ->
+                    boardRepository.findByTitleContainingAndDeleteFlagFalse(keyword,pageable);
+            case CONTENT ->
+                    boardRepository.findByContentContainingAndDeleteFlagFalse(keyword,pageable);
+            case WRITER ->
+                    boardRepository.findByWriter_NicknameAndDeleteFlagFalse(keyword,pageable);
+        };
+
+        return boards.map(BoardMapper::toBoardResponseDto);
     }
 }
