@@ -1,6 +1,7 @@
 package com.yh.blogserver.controller.board;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
+import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.service.board.BoardService;
@@ -10,10 +11,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
 
 @Slf4j
 @Tag(name = "Board API", description = "게시글 CRUD 관련 API")
@@ -62,6 +66,7 @@ public class BoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "글 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "글 수정 실패"),
             @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
@@ -106,5 +111,38 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
     }// 204 NO_CONTENT 는 body가 없음. -> ResponseEntity.noContent().build()
+
+    @Operation(
+            summary = "게시글 단건 조회",
+            description = """
+                    사용자의 인증 여부에 관계없이 게시글 단건을 조회할 수 있습니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "조회 실패"),
+            @ApiResponse(responseCode = "404", description = "게시글 없음")
+    })
+    @GetMapping("/{boardIndex}")
+    public ResponseEntity<ResponseDto<BoardResponseDto>> readBoard(@PathVariable Long boardIndex) {
+        log.info("[BOARD READ 요청] boardIndex={}", boardIndex);
+
+        BoardResponseDto boardResponseDto = boardService.getBoard(boardIndex);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(boardResponseDto,ResponseMessage.OK.message(), HttpStatus.OK.value()));
+    }
+
+    @GetMapping()
+    public ResponseEntity<ResponseDto<Page<BoardResponseDto>>> searchBoards(@RequestParam BoardSearchCondition searchCondition,
+                                                                            @RequestParam String keyword,
+                                                                            Pageable pageable){
+        log.info("[BOARD SEARCH 요청] condition={}, keyword={}", searchCondition, keyword);
+
+        Page<BoardResponseDto> result = boardService.searchBoards(searchCondition, keyword, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(result,null,null));
+    }
 
 }
