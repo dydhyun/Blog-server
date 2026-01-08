@@ -12,10 +12,9 @@ import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.BoardMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.awt.print.Pageable;
 
 
 @Slf4j
@@ -99,11 +98,11 @@ public class BoardServiceImpl implements BoardService {
 
         Page<Board> boards = switch (searchCondition){
             case TITLE ->
-                    boardRepository.findByTitleContainingAndDeleteFlagFalse(keyword,pageable);
+                    boardRepository.findByBoardTitleContainingAndBoardDeleteFlagFalse(keyword,pageable);
             case CONTENT ->
-                    boardRepository.findByContentContainingAndDeleteFlagFalse(keyword,pageable);
+                    boardRepository.findByBoardContentsContainingAndBoardDeleteFlagFalse(keyword,pageable);
             case WRITER ->
-                    boardRepository.findByWriter_NicknameAndDeleteFlagFalse(keyword,pageable);
+                    boardRepository.findByUser_NicknameAndBoardDeleteFlagFalse(keyword,pageable);
         };
 
         return boards.map(BoardMapper::toBoardResponseDto);

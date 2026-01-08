@@ -5,8 +5,8 @@ import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.entity.Board;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.awt.print.Pageable;
 
 public interface BoardService {
     BoardResponseDto createBoard(BoardRequestDto boardRequestDto, String userId);
