@@ -9,20 +9,21 @@ import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
 import com.yh.blogserver.util.message.UserMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService{
 
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -95,6 +96,7 @@ public class UserServiceImpl implements UserService{
         return checkMsgMap;
     }
 
+    @Transactional
     @Override
     public UserResponseDto join(UserRequestDto userRequestDto){
 
@@ -134,7 +136,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByUserId(userId).orElseThrow();
     }
 
-    @Override
+    @Override //삭제예정
     public String authenticatedUser(String token) {
 
         Base64.Decoder decoder = Base64.getDecoder();
