@@ -11,9 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 // JWT 관련 토큰없음, 인증실패 예외 분기
+@Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -26,6 +28,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         AuthErrorMessage authErrorMessage = resolveError(authException);
 
         response.setStatus(authErrorMessage.status().value());
+        response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(
                 objectMapper.writeValueAsString(
