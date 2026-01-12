@@ -1,5 +1,7 @@
 package com.yh.blogserver.config;
 
+import com.yh.blogserver.config.security.CustomAccessDeniedHandler;
+import com.yh.blogserver.config.security.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,6 +29,11 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 // CSRF 비활성화 (REST API : 세션 없이 토큰으로 인증)
                 .csrf(csrf -> csrf.disable())
+                // security 패키지의 커스텀예외 분기 처리해주기
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                )
                 // 두 번째 매개변수(기본 form 로그인 클래스) 앞에 첫 번째 매개변수(filter)를 실행하는 설정
                 // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 보다 먼저 실행시켜서,
                 // JWT 만으로도 SecurityContext 에 사용자 인증 정보를 세팅하도록 만드는 설정
