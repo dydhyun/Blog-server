@@ -19,14 +19,17 @@ public enum BoardMessage implements MessageCode {
         this.message = message;
     }
 
+    @Override
     public HttpStatus status(){
         return status;
     }
 
+    @Override
     public String code(){
         return code;
     }
 
+    @Override
     public String message() {
         return message;
     }
