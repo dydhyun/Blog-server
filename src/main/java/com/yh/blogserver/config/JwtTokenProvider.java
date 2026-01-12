@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -68,19 +70,19 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith((SecretKey) key)
                     .build()
                     .parseSignedClaims(token);
-            return true;
         } catch (ExpiredJwtException e) {
-            throw new JwtException("TOKEN_EXPIRED", e);
+            throw new JwtException("JWT_EXPIRED", e);
         } catch (JwtException e) {
-            throw new JwtException("INVALID_TOKEN", e);
+            throw new JwtException("JWT_INVALID", e);
         } catch (Exception e) {
-            throw new JwtException("TOKEN_VALIDATION_ERROR", e);
+            log.error("JWT validation failed by unexpected error", e);
+            throw new JwtException("JWT_VALIDATION_ERROR", e);
         }
     }
 
