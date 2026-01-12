@@ -9,13 +9,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CustomAuthenticationEntryPoint authenticationEntryPoint,
+                                           CustomAccessDeniedHandler accessDeniedHandler,
+                                           JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -31,14 +35,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 // security 패키지의 커스텀예외 분기 처리해주기
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 // 두 번째 매개변수(기본 form 로그인 클래스) 앞에 첫 번째 매개변수(filter)를 실행하는 설정
                 // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 보다 먼저 실행시켜서,
                 // JWT 만으로도 SecurityContext 에 사용자 인증 정보를 세팅하도록 만드는 설정
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // formLogin, httpBasic 둘 다 사용하지 않음
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
