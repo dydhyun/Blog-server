@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByUserId(userId).orElseThrow();
     }
 
-    @Override //삭제예정
+    @Override // 삭제예정 - 테스트 코드에서 사용중인 임시 메서드
     public String authenticatedUser(String token) {
 
         Base64.Decoder decoder = Base64.getDecoder();
@@ -155,5 +155,10 @@ public class UserServiceImpl implements UserService{
         String userId = (String) payloadMap.get("userId");
 
         return userId;
+    }
+
+    @Override
+    public Boolean isAdmin(String userId) {
+        return getUserByUserId(userId).isAdmin();
     }
 }

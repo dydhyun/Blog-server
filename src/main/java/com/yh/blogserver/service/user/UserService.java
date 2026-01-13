@@ -24,4 +24,5 @@ public interface UserService {
 
     String authenticatedUser(String token);
 
+    Boolean isAdmin(String userId);
 }
