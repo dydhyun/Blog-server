@@ -34,12 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
-
-//
-//    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-//        this.jwtTokenProvider = jwtTokenProvider;
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
