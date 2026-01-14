@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService{
 
         jwtTokenProvider.validateToken(refreshToken);
         String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
-        Boolean isAdmin = jwtTokenProvider.getUserGrantFromToken(refreshToken);
+        boolean isAdmin = jwtTokenProvider.getUserGrantFromToken(refreshToken);
 
         refreshTokenService.validate(userId, refreshToken);
         refreshTokenService.delete(userId);

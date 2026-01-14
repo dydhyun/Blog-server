@@ -49,7 +49,7 @@ public class TokenController {
         log.info("[USER LOGIN 요청] userRequestDto={}", loginRequest);
 
         UserResponseDto loginedUserDto = userService.login(loginRequest);
-        Boolean isAdmin = userService.isAdmin(loginedUserDto.userId());
+        boolean isAdmin = userService.isAdmin(loginedUserDto.userId());
 
         TokenPair tokenPair = authService.issue(loginedUserDto.userId(), isAdmin);
 

@@ -55,7 +55,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String userId, Boolean isAdmin) {
+    public String createRefreshToken(String userId, boolean isAdmin) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenValidityMS);

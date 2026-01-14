@@ -16,7 +16,7 @@ public record UserResponseDto(
         String addressDetail,
         String pNumber,
         String email,
-        Boolean isAdmin,
+        boolean isAdmin,
         LocalDateTime createdDate
 ) {
 }
