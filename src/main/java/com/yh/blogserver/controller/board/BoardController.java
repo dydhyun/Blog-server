@@ -4,6 +4,7 @@ import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.ResponseDto;
+import com.yh.blogserver.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.board.BoardService;
 import com.yh.blogserver.util.message.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,8 +45,10 @@ public class BoardController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 (DTO 형식 오류 등)")
     })
     @PostMapping("")
-    public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@AuthenticationPrincipal String userId,
+    public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                      @RequestBody BoardRequestDto boardRequestDto){
+
+        String userId = customUserDetails.getUserId();
 
         log.info("[BOARD CREATE 요청] boardTitle={}, userId={}", boardRequestDto.boardTitle(), userId);
 
@@ -71,9 +74,11 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @PatchMapping("/{boardIndex}")
-    public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(@AuthenticationPrincipal String userId,
+    public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                      @PathVariable Long boardIndex,
                                                                      @RequestBody BoardRequestDto boardRequestDto){
+
+        String userId = customUserDetails.getUserId();
 
         log.info("[BOARD UPDATE 요청] boardIndex={}, userId={}", boardIndex, userId);
 
@@ -99,10 +104,13 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @DeleteMapping("/{boardIndex}")
-    public ResponseEntity<ResponseDto<Void>> deleteBoard(@AuthenticationPrincipal String userId,
+    public ResponseEntity<ResponseDto<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                          @PathVariable Long boardIndex){
 
+        String userId = customUserDetails.getUserId();
+
         log.info("[BOARD DELETE 요청] boardIndex={}, userId={}", boardIndex, userId);
+
 
         boardService.deleteBoard(boardIndex, userId);
 

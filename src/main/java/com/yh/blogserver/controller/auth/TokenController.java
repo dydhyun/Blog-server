@@ -4,6 +4,7 @@ import com.yh.blogserver.dto.auth.TokenPair;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
+import com.yh.blogserver.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.auth.AuthService;
 import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.AuthMessage;
@@ -67,7 +68,10 @@ public class TokenController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ResponseDto<Void>> logout(@AuthenticationPrincipal String userId){
+    public ResponseEntity<ResponseDto<Void>> logout(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+
+        String userId = customUserDetails.getUserId();
+
         log.info("[USER LOGOUT 요청] userId={}", userId);
 
         authService.logout(userId);
