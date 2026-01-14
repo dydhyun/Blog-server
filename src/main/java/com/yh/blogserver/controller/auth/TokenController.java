@@ -49,9 +49,8 @@ public class TokenController {
         log.info("[USER LOGIN 요청] userRequestDto={}", loginRequest);
 
         UserResponseDto loginedUserDto = userService.login(loginRequest);
-        boolean isAdmin = userService.isAdmin(loginedUserDto.userId());
 
-        TokenPair tokenPair = authService.issue(loginedUserDto.userId(), isAdmin);
+        TokenPair tokenPair = authService.issue(loginedUserDto.userId());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Bearer " + tokenPair.accessToken());

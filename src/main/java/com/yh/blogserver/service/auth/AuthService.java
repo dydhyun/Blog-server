@@ -4,7 +4,7 @@ import com.yh.blogserver.dto.auth.TokenPair;
 
 public interface AuthService {
 
-    TokenPair issue(String userId, boolean isAdmin);
+    TokenPair issue(String userId);
 
     TokenPair reIssue(String refreshToken);
 

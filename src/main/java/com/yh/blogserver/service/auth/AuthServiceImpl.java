@@ -1,6 +1,6 @@
 package com.yh.blogserver.service.auth;
 
-import com.yh.blogserver.config.JwtTokenProvider;
+import com.yh.blogserver.config.security.jwt.JwtTokenProvider;
 import com.yh.blogserver.dto.auth.TokenPair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,28 +17,26 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public TokenPair issue(String userId, boolean isAdmin) {
+    public TokenPair issue(String userId) {
 
-        String accessToken = jwtTokenProvider.createToken(userId, isAdmin);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId, isAdmin);
+        String accessToken = jwtTokenProvider.createToken(userId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId);
 
         refreshTokenService.save(userId, refreshToken);
         return new TokenPair(accessToken, refreshToken);
     }
-
-
 
     @Override
     public TokenPair reIssue(String refreshToken) {
 
         jwtTokenProvider.validateToken(refreshToken);
         String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
-        boolean isAdmin = jwtTokenProvider.getUserGrantFromToken(refreshToken);
+//        boolean isAdmin = jwtTokenProvider.getUserGrantFromToken(refreshToken);
 
         refreshTokenService.validate(userId, refreshToken);
         refreshTokenService.delete(userId);
 
-        return issue(userId, isAdmin);
+        return issue(userId);
     }
 
     @Override
