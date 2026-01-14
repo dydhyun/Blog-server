@@ -1,39 +1,33 @@
 package com.yh.blogserver.controller.user;
 
-import com.yh.blogserver.config.JwtTokenProvider;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.service.user.UserService;
-import com.yh.blogserver.util.message.ResponseMessage;
 import com.yh.blogserver.util.message.UserMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Tag(name = "User API", description = "유저 회원가입, 로그인 관련 API")
+@Slf4j
+@Tag(name = "User API", description = "유저, 회원가입 관련 API")
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     private static final String CHECK_MSG_KEY = "checkMessage";
 
-    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Operation(
@@ -101,34 +95,6 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.success(userResponseDto, UserMessage.JOIN_SUCCESS.message(), HttpStatus.CREATED.value()));
-    }
-
-    @Operation(
-            summary = "로그인",
-            description = """
-                    아이디와 비밀번호를 입력하여 로그인합니다.
-                    성공 시 Authorization 헤더에 JWT Access Token을 담아 반환합니다.
-                    """
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "400", description = "로그인 실패")
-    })
-    @PostMapping("/login")
-    public ResponseEntity<ResponseDto<UserResponseDto>> login(@RequestBody UserRequestDto loginRequest){
-        log.info("[USER LOGIN 요청] userRequestDto={}", loginRequest);
-
-        UserResponseDto loginedUserDto = userService.login(loginRequest);
-
-        String token = jwtTokenProvider.createToken(loginedUserDto.userId(), loginedUserDto.isAdmin());
-//        String refreshToken = jwtTokenProvider.createRefreshToken(loginedUserDto.getUserId());
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization","Bearer " + token);
-        // http 표준 규약 -> Authorization: <type> <credentials>
-
-        return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders)
-                .body(ResponseDto.success(loginedUserDto, UserMessage.LOGGED_IN.message(), HttpStatus.OK.value()));
     }
 
 }
