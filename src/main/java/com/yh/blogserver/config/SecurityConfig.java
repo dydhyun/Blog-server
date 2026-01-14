@@ -23,6 +23,8 @@ public class SecurityConfig {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/auth/refresh").permitAll()
+                                .requestMatchers("/auth/logout").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
                                 .requestMatchers("/boards/**").authenticated()
                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
