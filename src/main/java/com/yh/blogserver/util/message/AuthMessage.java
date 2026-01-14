@@ -6,7 +6,7 @@ public enum AuthMessage implements MessageCode {
     LOGGED_IN(HttpStatus.OK, "auth-200", "로그인 되었습니다."),
     LOGGED_OUT(HttpStatus.OK, "auth-200", "로그아웃 되었습니다."),
     REFRESH(HttpStatus.OK, "auth-200", "재발급 되었습니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND,"auth-404","로그아웃할 사용자 정보가 존재하지 않습니다.");
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"auth-401","유효한 refreshToken이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String code;
