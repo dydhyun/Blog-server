@@ -1,5 +1,8 @@
-package com.yh.blogserver.config;
+package com.yh.blogserver.config.security.filter;
 
+import com.yh.blogserver.config.security.jwt.JwtTokenProvider;
+import com.yh.blogserver.security.auth.CustomUserDetails;
+import com.yh.blogserver.security.auth.CustomUserDetailsService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,10 +31,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AuthenticationEntryPoint authenticationEntryPoint) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AuthenticationEntryPoint authenticationEntryPoint, CustomUserDetailsService customUserDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationEntryPoint = authenticationEntryPoint;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -56,7 +61,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtTokenProvider.validateToken(token);
 
             String userId = jwtTokenProvider.getUserIdFromToken(token);
-            boolean isAdmin = jwtTokenProvider.getUserGrantFromToken(token);
+
+            CustomUserDetails customUserDetails =
+                    customUserDetailsService.loadUserByUserId(userId);
 
             // SecurityContext에 인증 객체 생성
             // authorities 는 Collection<? extends GrantedAuthority> 타입.
@@ -64,13 +71,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 한 사용자에게 여러 권한이 있을 수 있기 때문에 리스트나 세트 형태로 제공
             List<GrantedAuthority> authorities = new ArrayList<>();
             // springSecurity 규약 -> ROLE prefix
-            authorities.add(new SimpleGrantedAuthority(isAdmin ? "ROLE_ADMIN" : "ROLE_USER"));
+            authorities.add(new SimpleGrantedAuthority(customUserDetails.getRole()));
 
 
             // 인증 성공 → SecurityContext 에 Authentication 세팅
             // Principal 객체로 사용자 ID 대신 CustomUserDetails 객체 사용 가능
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                    new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
