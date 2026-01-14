@@ -55,7 +55,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String userId, Boolean isAdmin) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenValidityMS);
@@ -64,6 +64,7 @@ public class JwtTokenProvider {
                 .header().add("typ", "JWT")
                 .and()
                 .claim("userId", userId)
+                .claim("isAdmin", isAdmin)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
