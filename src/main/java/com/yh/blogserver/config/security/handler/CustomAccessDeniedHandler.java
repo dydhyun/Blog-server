@@ -1,4 +1,4 @@
-package com.yh.blogserver.config.security;
+package com.yh.blogserver.config.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yh.blogserver.config.security.message.AuthErrorMessage;

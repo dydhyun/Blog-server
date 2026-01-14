@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 // JWT 관련 토큰없음, 인증실패 예외 분기
 @Component
-public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class CustomJwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

@@ -1,7 +1,8 @@
-package com.yh.blogserver.config;
+package com.yh.blogserver.config.security;
 
+import com.yh.blogserver.config.security.filter.JwtAuthenticationFilter;
 import com.yh.blogserver.config.security.handler.CustomAccessDeniedHandler;
-import com.yh.blogserver.config.security.handler.CustomAuthenticationEntryPoint;
+import com.yh.blogserver.config.security.handler.CustomJwtAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,7 +18,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           CustomAuthenticationEntryPoint authenticationEntryPoint,
+                                           CustomJwtAuthenticationEntryPoint authenticationEntryPoint,
                                            CustomAccessDeniedHandler accessDeniedHandler,
                                            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http
