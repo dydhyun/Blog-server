@@ -1,7 +1,9 @@
 package com.yh.blogserver.service.auth;
 
 import com.yh.blogserver.entity.RefreshToken;
+import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.repository.auth.RefreshTokenRepository;
+import com.yh.blogserver.util.message.AuthMessage;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,7 +41,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional(readOnly = true)
     public void validate(String userId, String refreshToken) {
         RefreshToken token = refreshTokenRepository.findById(userId)
-                .orElseThrow(() -> new JwtException("REFRESH_TOKEN_NOT_FOUND"));
+                .orElseThrow(() -> new CustomException(AuthMessage.REFRESH_TOKEN_NOT_FOUND));
 
         token.validate(refreshToken);
     }
