@@ -1,7 +1,7 @@
 package com.yh.blogserver.config;
 
-import com.yh.blogserver.config.security.CustomAccessDeniedHandler;
-import com.yh.blogserver.config.security.CustomAuthenticationEntryPoint;
+import com.yh.blogserver.config.security.handler.CustomAccessDeniedHandler;
+import com.yh.blogserver.config.security.handler.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
