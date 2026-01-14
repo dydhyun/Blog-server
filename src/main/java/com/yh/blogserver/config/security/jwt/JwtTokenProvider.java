@@ -1,4 +1,4 @@
-package com.yh.blogserver.config;
+package com.yh.blogserver.config.security.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
     //  "alg": "HS256",
     //  "typ": "JWT"
     //}
-    public String createToken(String userId, boolean isAdmin) {
+    public String createToken(String userId) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenValidityMS);
@@ -47,7 +47,6 @@ public class JwtTokenProvider {
                 .header().add("typ", "JWT")
                 .and()
                 .claim("userId", userId)
-                .claim("isAdmin", isAdmin)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 // signature 생성부 ->
@@ -55,7 +54,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String userId, boolean isAdmin) {
+    public String createRefreshToken(String userId) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenValidityMS);
@@ -64,7 +63,6 @@ public class JwtTokenProvider {
                 .header().add("typ", "JWT")
                 .and()
                 .claim("userId", userId)
-                .claim("isAdmin", isAdmin)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -96,12 +94,4 @@ public class JwtTokenProvider {
                 .get("userId", String.class);
     }
 
-    public boolean getUserGrantFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("isAdmin", Boolean.class);
-    }
 }
