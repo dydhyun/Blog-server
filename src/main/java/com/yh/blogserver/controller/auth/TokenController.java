@@ -38,7 +38,7 @@ public class TokenController {
             summary = "로그인",
             description = """
                     아이디와 비밀번호를 입력하여 로그인합니다.
-                    성공 시 Authorization 헤더에 JWT Access Token을 담아 반환합니다.
+                    성공 시 JWT AccessToken 과 RefreshToken 을 발급합니다.
                     """
     )
     @ApiResponses({
@@ -67,6 +67,15 @@ public class TokenController {
                 .body(ResponseDto.success(loginedUserDto, UserMessage.LOGGED_IN.message(), HttpStatus.OK.value()));
     }
 
+    @Operation(
+            summary = "로그아웃",
+            description = "로그인 된 회원의 RefreshToken 을 제거하여 refresh 엔드포인트 접근을 제한합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "400", description = "로그아웃 실패"),
+            @ApiResponse(responseCode = "404", description = "로그인 정보 없음")
+    })
     @PostMapping("/logout")
     public ResponseEntity<ResponseDto<Void>> logout(@AuthenticationPrincipal CustomUserDetails customUserDetails){
 
@@ -88,6 +97,14 @@ public class TokenController {
                 .body(ResponseDto.success(null, AuthMessage.LOGGED_OUT.message(), HttpStatus.OK.value()));
     }
 
+    @Operation(
+            summary = "재발급",
+            description = "AccessToken 이 만료되면 해당 API 를 통해 재발급 됩니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "재발급 성공"),
+            @ApiResponse(responseCode = "400", description = "재발급 실패")
+    })
     @PostMapping("/refresh")
     public ResponseEntity<ResponseDto<Void>> refresh(@CookieValue("refreshToken") String refreshToken) {
 
