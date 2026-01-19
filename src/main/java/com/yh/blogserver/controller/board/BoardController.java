@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -138,19 +140,35 @@ public class BoardController {
         BoardResponseDto boardResponseDto = boardService.getBoard(boardIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(boardResponseDto,ResponseMessage.OK.message(), HttpStatus.OK.value()));
+                .body(ResponseDto.success(boardResponseDto,ResponseMessage.OK.message(), HttpStatus.FOUND.value()));
     }
 
+    @Operation(
+            summary = "게시글 검색",
+            description = """
+                    사용자의 인증 여부에 관계없이 게시글을 검색할 수 있습니다.
+                    BoardSearchCondition 프론트엔드의 셀렉트 박스값으로 TITLE, CONTENT, WRITER 검색조건을 선택하고,
+                    keyWord 값으로 검색어를 입력 받습니다. 
+                    기본 페이지 값, 정렬 기준은 다음과 같으며, 프론트에서 쿼리파라미터로 요청받습니다.
+                    boards?searchCondition=TITLE&keyword=test&page=0&size=10&sort=boardCreatedTime,desc
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "조회 실패"),
+            @ApiResponse(responseCode = "404", description = "게시글 없음")
+    })
     @GetMapping()
     public ResponseEntity<ResponseDto<Page<BoardResponseDto>>> searchBoards(@RequestParam BoardSearchCondition searchCondition,
                                                                             @RequestParam String keyword,
-                                                                            Pageable pageable){
+    @PageableDefault(size = 10, sort = "boardCreatedTime", direction = Sort.Direction.DESC) Pageable pageable){
         log.info("[BOARD SEARCH 요청] condition={}, keyword={}", searchCondition, keyword);
 
         Page<BoardResponseDto> result = boardService.searchBoards(searchCondition, keyword, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(result,null,null));
+                .body(ResponseDto.success(result,ResponseMessage.OK.message(), HttpStatus.FOUND.value()));
     }
 
 }
+
