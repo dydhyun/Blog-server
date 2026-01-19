@@ -93,7 +93,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Page<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable) {
         if (keyword.trim().isEmpty()){
-            throw new CustomException(BoardMessage.BOARD_CAN_NOT_EMPTY);
+            throw new CustomException(BoardMessage.SEARCH_KEYWORD_EMPTY);
         }
 
         Page<Board> boards = switch (searchCondition){
