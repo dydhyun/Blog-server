@@ -140,7 +140,7 @@ public class BoardController {
         BoardResponseDto boardResponseDto = boardService.getBoard(boardIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(boardResponseDto,ResponseMessage.OK.message(), HttpStatus.FOUND.value()));
+                .body(ResponseDto.success(boardResponseDto,ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -167,7 +167,7 @@ public class BoardController {
         Page<BoardResponseDto> result = boardService.searchBoards(searchCondition, keyword, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(result,ResponseMessage.OK.message(), HttpStatus.FOUND.value()));
+                .body(ResponseDto.success(result,ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
 }
