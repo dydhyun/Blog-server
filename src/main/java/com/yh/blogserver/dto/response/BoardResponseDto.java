@@ -13,7 +13,7 @@ public record BoardResponseDto(
         String boardTitle,
         String boardContents,
         LocalDateTime boardCreatedTime,
-        Long boardViewCnt,
+        long boardViewCnt,
         boolean boardDeleteFlag
 ) {
 }

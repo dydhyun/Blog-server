@@ -20,6 +20,6 @@ public record BoardRequestDto(
         @Schema(description = "게시글 생성시간. 사용자 입력 x", example = "2025-11-20 17:42:26.517182")
         LocalDateTime boardCreatedTime,
         @Schema(description = "게시글 조회수. 사용자 입력 x", example = "1")
-        Long boardViewCnt
+        long boardViewCnt
 ) {
 }

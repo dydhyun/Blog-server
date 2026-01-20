@@ -33,7 +33,7 @@ public class Board {
 
     @Column(updatable = false)
     private LocalDateTime boardCreatedTime;
-    private Long boardViewCnt;
+    private long boardViewCnt;
 
     private boolean boardDeleteFlag;
     private LocalDateTime boardDeletedAt = null;
