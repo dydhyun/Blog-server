@@ -4,6 +4,5 @@ import org.springframework.data.domain.Page;
 
 public record BlogResponseDto (
         BlogHeaderDto blogHeader,
-        BlogBoardSummaryDto blogBoardSummary,
         Page<BlogBoardSummaryDto> boardsSummaries
 ) {}
