@@ -30,6 +30,7 @@ public class Board {
     private User user;
     private String boardTitle;
     private String boardContents;
+    private String thumbnailUrl;
 
     @Column(updatable = false)
     private LocalDateTime boardCreatedTime;
