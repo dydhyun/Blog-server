@@ -2,6 +2,7 @@ package com.yh.blogserver.service.board;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
+import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.entity.Board;
 import com.yh.blogserver.entity.User;
@@ -12,9 +13,12 @@ import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.BoardMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Slf4j
@@ -106,5 +110,16 @@ public class BoardServiceImpl implements BoardService {
         };
 
         return boards.map(BoardMapper::toBoardResponseDto);
+    }
+
+    @Override
+    public List<BlogBoardSummaryDto> getNewestBoards(int limit) {
+
+        return boardRepository.findNewestBoards(PageRequest.of(0, limit));
+    }
+
+    @Override
+    public Page<BlogBoardSummaryDto> getBoardSummariesByUser(String userId, Pageable pageable) {
+        return null;
     }
 }
