@@ -32,6 +32,9 @@ public class User {
     private String pNumber;
     private String email;
 
+    private String profileImageUrl;
+    private String description;
+
     private Boolean isAdmin;
 
     @Column(updatable = false)
