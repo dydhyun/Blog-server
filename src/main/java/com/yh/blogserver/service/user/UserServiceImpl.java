@@ -3,6 +3,7 @@ package com.yh.blogserver.service.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.response.BlogHeaderDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
 import com.yh.blogserver.exception.CustomException;
@@ -14,10 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -160,5 +160,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean isAdmin(String userId) {
         return getUserByUserId(userId).isAdmin();
+    }
+
+    @Override
+    public Map<String, BlogHeaderDto> getBlogHeadersByUserIds(Set<String> userIds) {
+        List<BlogHeaderDto> blogHeaderList =  userRepository.findBlogHeadersByUserIds(userIds);
+
+        return blogHeaderList.stream().collect(Collectors.toMap(
+                BlogHeaderDto::userId,
+                Function.identity()
+        ));
+    }
+
+    @Override
+    public BlogHeaderDto getBlogHeader(String userId) {
+        return null;
     }
 }
