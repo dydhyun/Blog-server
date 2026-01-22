@@ -2,6 +2,7 @@ package com.yh.blogserver.controller.board;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
+import com.yh.blogserver.dto.request.BoardUpdateRequestDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.ResponseDto;
@@ -78,7 +79,7 @@ public class BoardController {
     @PatchMapping("/{boardIndex}")
     public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                      @PathVariable Long boardIndex,
-                                                                     @RequestBody BoardRequestDto boardRequestDto){
+                                                                     @RequestBody BoardUpdateRequestDto boardRequestDto){
 
         String userId = customUserDetails.getUserId();
 
