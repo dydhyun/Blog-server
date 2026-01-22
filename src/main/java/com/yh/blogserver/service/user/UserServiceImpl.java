@@ -174,6 +174,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public BlogHeaderDto getBlogHeader(String userId) {
-        return null;
+
+        return userRepository.findBlogHeaderByUserId(userId)
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
     }
 }
