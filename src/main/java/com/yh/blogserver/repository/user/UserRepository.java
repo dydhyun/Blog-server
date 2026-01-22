@@ -37,4 +37,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
         where u.userId in :userIds
     """)
     List<BlogHeaderDto> findBlogHeadersByUserIds(@Param("userIds") Set<String> userIds);
+
+    @Query("""
+        select new com.yh.blogserver.dto.response.BlogHeaderDto(
+            u.userId,
+            u.nickname,
+            u.profileImageUrl,
+            u.description,
+            (
+                select count(b)
+                from Board b
+                where b.user = u
+                  and b.boardDeleteFlag = false
+            )
+        )
+        from User u
+        where u.userId = :userId
+    """)
+    Optional<BlogHeaderDto> findBlogHeaderByUserId(@Param("userId") String userId);
 }
