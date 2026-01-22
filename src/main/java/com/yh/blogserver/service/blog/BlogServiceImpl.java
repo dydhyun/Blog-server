@@ -54,17 +54,32 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public BlogHeaderDto getBlogHeader(String userId) {
-        return userService.getBlogHeader(userId);
+
+        BlogHeaderDto header = userService.getBlogHeader(userId);
+        log.info("[getBlogHeader 요청] header = {}", header);
+
+        return header;
     }
 
     @Override
     public Page<BlogBoardSummaryDto> getBlogBoards(String userId, Pageable pageable) {
-        return boardService.getBoardSummariesByUser(userId, pageable);
+
+        Page<BlogBoardSummaryDto> summaries = boardService.getBoardSummariesByUser(userId, pageable);
+        log.info("[getBlogBoards 요청] summaries = {}", summaries);
+
+        return summaries;
     }
 
     @Override
     public BlogResponseDto getUserBlog(String userId, Pageable pageable) {
-        return null;
+
+        BlogHeaderDto header = getBlogHeader(userId);
+        Page<BlogBoardSummaryDto> summaries = getBlogBoards(userId, pageable);
+
+        BlogResponseDto blogResponseDto = new BlogResponseDto(header, summaries);
+        log.info("[getUserBlog 요청] blogResponse = {}", blogResponseDto);
+
+        return blogResponseDto;
     }
 
 }
