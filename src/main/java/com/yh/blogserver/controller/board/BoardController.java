@@ -3,6 +3,7 @@ package com.yh.blogserver.controller.board;
 import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BoardResponseDto;
+import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.board.BoardService;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -159,12 +159,12 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @GetMapping()
-    public ResponseEntity<ResponseDto<Page<BoardResponseDto>>> searchBoards(@RequestParam BoardSearchCondition searchCondition,
-                                                                            @RequestParam String keyword,
-    @PageableDefault(size = 10, sort = "boardCreatedTime", direction = Sort.Direction.DESC) Pageable pageable){
+    public ResponseEntity<ResponseDto<PageResponse<BoardResponseDto>>> searchBoards(@RequestParam BoardSearchCondition searchCondition,
+                                                                                    @RequestParam String keyword,
+                                                                                    @PageableDefault(size = 10, sort = "boardCreatedTime", direction = Sort.Direction.DESC) Pageable pageable){
         log.info("[BOARD SEARCH 요청] condition={}, keyword={}", searchCondition, keyword);
 
-        Page<BoardResponseDto> result = boardService.searchBoards(searchCondition, keyword, pageable);
+        PageResponse<BoardResponseDto> result = boardService.searchBoards(searchCondition, keyword, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(result,ResponseMessage.OK.message(), HttpStatus.OK.value()));

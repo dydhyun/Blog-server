@@ -4,6 +4,7 @@ import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
+import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.entity.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public interface BoardService {
 
     Boolean isWriter(Board board, String userId);
 
-    Page<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable);
+    PageResponse<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable);
 
     List<BlogBoardSummaryDto> getNewestBoards(int limit);
 

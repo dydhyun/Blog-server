@@ -4,6 +4,7 @@ import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
 import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
+import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.entity.Board;
 import com.yh.blogserver.entity.User;
 import com.yh.blogserver.exception.CustomException;
@@ -95,7 +96,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Page<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable) {
+    public PageResponse<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable) {
         if (keyword.trim().isEmpty()){
             throw new CustomException(BoardMessage.SEARCH_KEYWORD_EMPTY);
         }
@@ -109,7 +110,7 @@ public class BoardServiceImpl implements BoardService {
                     boardRepository.findByUser_NicknameAndBoardDeleteFlagFalse(keyword,pageable);
         };
 
-        return boards.map(BoardMapper::toBoardResponseDto);
+        return PageResponse.from(boards.map(BoardMapper::toBoardResponseDto));
     }
 
     @Transactional(readOnly = true)
