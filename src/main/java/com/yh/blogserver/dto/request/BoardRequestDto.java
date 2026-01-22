@@ -6,7 +6,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Schema(description = "게시글 생성,수정 등 사용자가 프론트에서 요청하는 DTO")
+@Schema(description = "게시글 생성 등 사용자가 프론트에서 요청하는 DTO")
 @Builder(toBuilder = true)
 public record BoardRequestDto(
         @Schema(description = "게시글 인덱스. 사용자 입력 x", example = "1")
@@ -20,6 +20,8 @@ public record BoardRequestDto(
         @Schema(description = "게시글 생성시간. 사용자 입력 x", example = "2025-11-20 17:42:26.517182")
         LocalDateTime boardCreatedTime,
         @Schema(description = "게시글 조회수. 사용자 입력 x", example = "1")
-        long boardViewCnt
+        long boardViewCnt,
+        @Schema(description = "게시글 썸네일.")
+        String thumbnailUrl
 ) {
 }
