@@ -2,6 +2,7 @@ package com.yh.blogserver.service.board;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
+import com.yh.blogserver.dto.request.BoardUpdateRequestDto;
 import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.PageResponse;
@@ -58,12 +59,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponseDto updateBoard(Long boardIndex, BoardRequestDto boardRequestDto, String userId) {
+    public BoardResponseDto updateBoard(Long boardIndex, BoardUpdateRequestDto boardUpdateRequestDto, String userId) {
         Board board = boardRepository.findById(boardIndex)
                 .orElseThrow(() -> new CustomException(BoardMessage.BOARD_NOT_FOUND));
 
         isWriter(board,userId);
-        board.updateBoard(boardRequestDto);
+        board.updateBoard(boardUpdateRequestDto);
 
         return BoardMapper.toBoardResponseDto(board);
     }

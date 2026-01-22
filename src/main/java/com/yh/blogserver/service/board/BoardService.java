@@ -2,6 +2,7 @@ package com.yh.blogserver.service.board;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
 import com.yh.blogserver.dto.request.BoardSearchCondition;
+import com.yh.blogserver.dto.request.BoardUpdateRequestDto;
 import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.PageResponse;
@@ -17,7 +18,7 @@ public interface BoardService {
 
     BoardResponseDto getBoard(Long boardIndex);
 
-    BoardResponseDto updateBoard(Long boardIndex, BoardRequestDto boardRequestDto, String userId);
+    BoardResponseDto updateBoard(Long boardIndex, BoardUpdateRequestDto boardRequestDto, String userId);
 
     void deleteBoard(Long boardIndex, String userId);
 
