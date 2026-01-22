@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -100,11 +99,11 @@ public class BlogController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 블로그")
     })
     @GetMapping("/{userId}/boards")
-    public ResponseEntity<ResponseDto<Page<BlogBoardSummaryDto>>> getBlogBoards(@PathVariable String userId,
+    public ResponseEntity<ResponseDto<PageResponse<BlogBoardSummaryDto>>> getBlogBoards(@PathVariable String userId,
                                                                                 Pageable pageable) {
         log.info("[GET BLOG BOARDS 요청] blogUserId={}", userId);
 
-        Page<BlogBoardSummaryDto> boardSummaries = blogService.getBlogBoards(userId, pageable);
+        PageResponse<BlogBoardSummaryDto> boardSummaries = blogService.getBlogBoards(userId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(boardSummaries, ResponseMessage.OK.message(), HttpStatus.OK.value()));
