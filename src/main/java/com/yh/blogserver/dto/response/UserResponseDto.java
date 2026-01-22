@@ -17,6 +17,8 @@ public record UserResponseDto(
         String pNumber,
         String email,
         boolean isAdmin,
-        LocalDateTime createdDate
+        LocalDateTime createdDate,
+        String description,
+        String profileImageUrl
 ) {
 }
