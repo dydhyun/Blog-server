@@ -1,7 +1,7 @@
 package com.yh.blogserver.controller.blog;
 
 import com.yh.blogserver.dto.response.*;
-import com.yh.blogserver.service.blog.BlogService;
+import com.yh.blogserver.service.blog.BlogUseCase;
 import com.yh.blogserver.util.message.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,9 +26,9 @@ import java.util.List;
 public class BlogController {
 
     private static final Logger log = LoggerFactory.getLogger(BlogController.class);
-    private final BlogService blogService;
+    private final BlogUseCase blogService;
 
-    public BlogController(BlogService blogService) {
+    public BlogController(BlogUseCase blogService) {
         this.blogService = blogService;
     }
 
