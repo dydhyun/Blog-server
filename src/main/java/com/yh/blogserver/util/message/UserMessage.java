@@ -28,7 +28,10 @@ public enum UserMessage implements MessageCode{
     INVALID_USER_PW(HttpStatus.BAD_REQUEST, "user-400", "사용할 수 없는 비밀번호 입니다."),
     AVAILABLE_USER_PW(HttpStatus.OK, "user-200", "사용 가능한 비밀번호 입니다."),
     PASSWORD_LENGTH_MESSAGE(HttpStatus.BAD_REQUEST, "user-400", "비밀번호는 8 ~ 16 글자 입니다."),
-    PASSWORD_NOT_VALID_MESSAGE(HttpStatus.BAD_REQUEST, "user-400", "비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다.");
+    PASSWORD_NOT_VALID_MESSAGE(HttpStatus.BAD_REQUEST, "user-400", "비밀번호에는 하나 이상의 특수문자가 포함되어야 합니다."),
+
+    USER_INFO_CHANGE(HttpStatus.OK, "user-200", "회원 정보가 변경되었습니다."),
+    USER_DELETE_SUCCESS(HttpStatus.OK, "user-200", "회원 탈퇴가 완료 되었습니다.");
 
     private final HttpStatus status;
     private final String code;
