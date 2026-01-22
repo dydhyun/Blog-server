@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -18,12 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class BlogServiceImpl implements BlogService{
+@Transactional(readOnly = true)
+public class BlogUseCaseImpl implements BlogUseCase {
 
     private final UserService userService;
     private final BoardService boardService;
 
-    public BlogServiceImpl(UserService userService, BoardService boardService) {
+    public BlogUseCaseImpl(UserService userService, BoardService boardService) {
         this.userService = userService;
         this.boardService = boardService;
     }
