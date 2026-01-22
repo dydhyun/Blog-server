@@ -112,14 +112,17 @@ public class BoardServiceImpl implements BoardService {
         return boards.map(BoardMapper::toBoardResponseDto);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BlogBoardSummaryDto> getNewestBoards(int limit) {
 
         return boardRepository.findNewestBoards(PageRequest.of(0, limit));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BlogBoardSummaryDto> getBoardSummariesByUser(String userId, Pageable pageable) {
-        return null;
+
+        return boardRepository.findBoardSummariesByUserId(userId, pageable);
     }
 }
