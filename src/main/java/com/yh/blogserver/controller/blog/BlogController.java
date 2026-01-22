@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Bolg API", description = "블로그, 사용자 + 게시글 조회 관련 API")
@@ -67,8 +66,10 @@ public class BlogController {
     public ResponseEntity<ResponseDto<BlogResponseDto>> getUserBlog(@PathVariable String userId, Pageable pageable) {
         log.info("[GET USERS BLOG 요청] blogUserId={}", userId);
 
+        BlogResponseDto blogResponseDto = blogService.getUserBlog(userId, pageable);
 
-        return null;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(blogResponseDto, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
     // SPA 최적화
@@ -84,8 +85,10 @@ public class BlogController {
     public ResponseEntity<ResponseDto<BlogHeaderDto>> getBlogHeader(@PathVariable String userId) {
         log.info("[GET BLOG HEADER 요청] blogUserId={}", userId);
 
+        BlogHeaderDto headerDto = blogService.getBlogHeader(userId);
 
-        return null;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(headerDto, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
     @Operation(summary = "재요청이 많은 바디로 들어갈 유저의 글 목록 조회.",
@@ -101,8 +104,10 @@ public class BlogController {
                                                                                 Pageable pageable) {
         log.info("[GET BLOG BOARDS 요청] blogUserId={}", userId);
 
+        Page<BlogBoardSummaryDto> boardSummaries = blogService.getBlogBoards(userId, pageable);
 
-        return null;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(boardSummaries, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
 
