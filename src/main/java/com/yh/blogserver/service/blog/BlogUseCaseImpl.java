@@ -1,9 +1,6 @@
 package com.yh.blogserver.service.blog;
 
-import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
-import com.yh.blogserver.dto.response.BlogHeaderDto;
-import com.yh.blogserver.dto.response.BlogResponseDto;
-import com.yh.blogserver.dto.response.MainBlogCardDto;
+import com.yh.blogserver.dto.response.*;
 import com.yh.blogserver.service.board.BoardService;
 import com.yh.blogserver.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,21 +32,36 @@ public class BlogUseCaseImpl implements BlogUseCase {
 //        log.info("[BlogService getNewestBlogs] 최신글 가져오기 실행");
 
         List<BlogBoardSummaryDto> blogBoardSummaries = boardService.getNewestBoards(3);
-        log.info("[blogBoardSummaries = {} ]",blogBoardSummaries);
+        log.debug("newest blog summaries count={}", blogBoardSummaries.size());
+
+        Map<String, BlogHeaderDto> headers = loadBlogHeaders(blogBoardSummaries);
+
+        List<MainBlogCardDto> cards = combineSummariesAndHeaders(blogBoardSummaries, headers);
+
+        return cards;
+    }
+
+    private Map<String, BlogHeaderDto> loadBlogHeaders(List<BlogBoardSummaryDto> blogBoardSummaries){
 
         Set<String> userIds = blogBoardSummaries.stream()
                 .map(BlogBoardSummaryDto::userId)
                 .collect(Collectors.toSet());
 
-        Map<String, BlogHeaderDto> userMap = userService.getBlogHeadersByUserIds(userIds);
-        log.info("[userMap = {} ]", userMap);
+        Map<String, BlogHeaderDto> headers = userService.getBlogHeadersByUserIds(userIds);
+        log.debug("headers loaded count={}", headers.size());
+
+        return headers;
+    }
+
+    private List<MainBlogCardDto> combineSummariesAndHeaders(List<BlogBoardSummaryDto> blogBoardSummaries, Map<String, BlogHeaderDto> headers){
 
         List<MainBlogCardDto> cards = blogBoardSummaries.stream()
                 .map(boardSummary -> new MainBlogCardDto(
-                        userMap.get(boardSummary.userId()),
+                        headers.get(boardSummary.userId()),
                         boardSummary
                 ))
                 .toList();
+        log.debug("main blog cards count={}", cards.size());
 
         return cards;
     }
@@ -58,28 +70,37 @@ public class BlogUseCaseImpl implements BlogUseCase {
     public BlogHeaderDto getBlogHeader(String userId) {
 
         BlogHeaderDto header = userService.getBlogHeader(userId);
-        log.info("[getBlogHeader 요청] header = {}", header);
+        log.info("[getBlogHeader] userId={}", userId);
+        log.debug("header={}", header);
 
         return header;
     }
 
     @Override
-    public Page<BlogBoardSummaryDto> getBlogBoards(String userId, Pageable pageable) {
+    public PageResponse<BlogBoardSummaryDto> getBlogBoards(String userId, Pageable pageable) {
 
         Page<BlogBoardSummaryDto> summaries = boardService.getBoardSummariesByUser(userId, pageable);
-        log.info("[getBlogBoards 요청] summaries = {}", summaries);
 
-        return summaries;
+        log.info("[getBlogBoards] userId={}, page={}, size={}, total={}",
+                userId,
+                summaries.getNumber(),
+                summaries.getSize(),
+                summaries.getTotalElements());
+
+        log.debug("boards content={}", summaries.getContent());
+
+        return PageResponse.from(summaries);
     }
 
     @Override
     public BlogResponseDto getUserBlog(String userId, Pageable pageable) {
 
         BlogHeaderDto header = getBlogHeader(userId);
-        Page<BlogBoardSummaryDto> summaries = getBlogBoards(userId, pageable);
+        PageResponse<BlogBoardSummaryDto> summaries = getBlogBoards(userId, pageable);
 
         BlogResponseDto blogResponseDto = new BlogResponseDto(header, summaries);
-        log.info("[getUserBlog 요청] blogResponse = {}", blogResponseDto);
+        log.info("[getUserBlog] userId={}", userId);
+        log.debug("blogResponse={}", blogResponseDto);
 
         return blogResponseDto;
     }
