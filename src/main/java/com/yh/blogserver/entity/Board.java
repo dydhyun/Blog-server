@@ -1,6 +1,7 @@
 package com.yh.blogserver.entity;
 
 import com.yh.blogserver.dto.request.BoardRequestDto;
+import com.yh.blogserver.dto.request.BoardUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,9 +52,20 @@ public class Board {
         this.boardDeletedAt = LocalDateTime.now();
     }
 
-    public void updateBoard(BoardRequestDto boardRequestDto){
-        this.boardTitle = boardRequestDto.boardTitle();
-        this.boardContents = boardRequestDto.boardContents();
+    public void updateBoard(BoardUpdateRequestDto boardUpdateRequestDto) {
+
+        if (boardUpdateRequestDto.boardTitle() != null) {
+            this.boardTitle = boardUpdateRequestDto.boardTitle();
+        }
+
+        if (boardUpdateRequestDto.boardContents() != null) {
+            this.boardContents = boardUpdateRequestDto.boardContents();
+        }
+
+        if (boardUpdateRequestDto.thumbnailUrl() != null) {
+            this.thumbnailUrl = boardUpdateRequestDto.thumbnailUrl();
+        }
     }
+
 
 }
