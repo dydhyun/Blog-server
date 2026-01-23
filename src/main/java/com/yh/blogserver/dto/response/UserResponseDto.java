@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Schema(description = "서버에서 응답으로 돌려보내는 회원관련 DTO")
 @Builder
 public record UserResponseDto(
-        Long userIndex,
+//        Long userIndex,
         String userId,
         String username,
         String nickname,
