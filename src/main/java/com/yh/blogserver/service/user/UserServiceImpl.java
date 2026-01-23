@@ -3,6 +3,7 @@ package com.yh.blogserver.service.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import com.yh.blogserver.dto.response.BlogHeaderDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService{
 
         String encodedPw = (passwordEncoder.encode(userRequestDto.userPw()));
         User user = UserMapper.fromDto(userRequestDto);
-        user.setUserPw(encodedPw);
+        user.changePassword(encodedPw);
 
         User joinedUser = userRepository.save(user);
 //        joinedUser.setUserPw("");
@@ -177,5 +178,27 @@ public class UserServiceImpl implements UserService{
 
         return userRepository.findBlogHeaderByUserId(userId)
                 .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+    }
+
+
+    @Override
+    @Transactional
+    public void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto) {
+        log.info("UPDATE MYPAGE 메서드 실행");
+
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+
+        if (userUpdateRequestDto.userPw() != null) {
+            userPwCheck(userUpdateRequestDto.userPw());
+            String encoded = passwordEncoder.encode(userUpdateRequestDto.userPw());
+            user.changePassword(encoded);
+        }
+
+        if (userUpdateRequestDto.nickname() != null) {
+            userNicknameCheck(userUpdateRequestDto.nickname());
+        }
+
+        user.update(userUpdateRequestDto);
     }
 }

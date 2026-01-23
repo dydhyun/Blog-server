@@ -1,6 +1,7 @@
 package com.yh.blogserver.service.user;
 
 import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import com.yh.blogserver.dto.response.BlogHeaderDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
@@ -31,4 +32,6 @@ public interface UserService {
     Map<String, BlogHeaderDto> getBlogHeadersByUserIds(Set<String> userIds);
 
     BlogHeaderDto getBlogHeader(String userId);
+
+    void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto);
 }
