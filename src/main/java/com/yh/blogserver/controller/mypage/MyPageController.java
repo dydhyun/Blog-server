@@ -1,5 +1,7 @@
 package com.yh.blogserver.controller.mypage;
 
+import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.security.auth.CustomUserDetails;
@@ -46,8 +48,20 @@ public class MyPageController {
                 responseDto, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
+    @Operation(
+            summary = "마이페이지 사용자 정보 수정",
+            description = "로그인 된 사용자가 원하는 필드에 사용자 입력을 받아 개인정보를 수정합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "사용자 정보 수정 실패")
+    })
     @PatchMapping("")
-    public ResponseEntity<ResponseDto<Void>> patchMyPage(){
+    public ResponseEntity<ResponseDto<Void>> updateMyPage(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                         @RequestBody UserUpdateRequestDto userUpdateRequestDto){
+        String userId = customUserDetails.getUserId();
+
+        myPageUseCase.updateMyPage(userId, userUpdateRequestDto);
 
         return ResponseEntity.ok(ResponseDto.success(
                 null, UserMessage.USER_INFO_CHANGE.message(), UserMessage.USER_INFO_CHANGE.code()));
