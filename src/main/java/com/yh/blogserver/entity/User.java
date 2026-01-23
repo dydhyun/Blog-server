@@ -1,7 +1,10 @@
 package com.yh.blogserver.entity;
 
+import com.yh.blogserver.dto.request.UserRequestDto;
+import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Getter
-@Setter
 public class User {
 
     @Id
@@ -54,4 +56,40 @@ public class User {
         this.createdDate = LocalDateTime.now();
         this.userDeleteFlag = false;
     }
+
+    public void update(UserUpdateRequestDto dto) {
+
+        if (dto.nickname() != null && !dto.nickname().isEmpty()) {
+            this.nickname = dto.nickname();
+        }
+
+        if (dto.email() != null && !dto.email().isBlank()) {
+            this.email = dto.email();
+        }
+
+        if (dto.pNumber() != null && !dto.pNumber().isBlank()) {
+            this.pNumber = dto.pNumber();
+        }
+
+        if (dto.address() != null) {
+            this.address = dto.address();
+        }
+
+        if (dto.addressDetail() != null) {
+            this.addressDetail = dto.addressDetail();
+        }
+
+        if (dto.description() != null) {
+            this.description = dto.description();
+        }
+
+        if (dto.profileImageUrl() != null) {
+            this.profileImageUrl = dto.profileImageUrl();
+        }
+    }
+
+    public void changePassword(String encodedPw){
+        this.userPw = encodedPw;
+    }
+
 }
