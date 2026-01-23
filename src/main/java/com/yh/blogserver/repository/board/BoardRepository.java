@@ -4,6 +4,7 @@ import com.yh.blogserver.dto.response.BlogBoardSummaryDto;
 import com.yh.blogserver.entity.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,7 +30,21 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findByBoardContentsContainingAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
 
-    Page<Board> findByUser_NicknameAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
+//    @Query("""
+//        select b
+//        from Board b
+//        where b.user.nickname = :keyword
+//        and b.boardDeleteFlag = false
+//    """)
+//    @Query("""
+//            select b
+//            from Board b
+//            join fetch b.user
+//            where b.user.nickname like %:keyword%
+//            and b.boardDeleteFlag = false
+//        """)
+//    Page<Board> findByUser_NicknameAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
+    Page<Board> findByUser_NicknameContainingAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
 
 
     @Query("""

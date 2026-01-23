@@ -104,11 +104,11 @@ public class BoardServiceImpl implements BoardService {
 
         Page<Board> boards = switch (searchCondition){
             case TITLE ->
-                    boardRepository.findByBoardTitleContainingAndBoardDeleteFlagFalse(keyword,pageable);
+                    boardRepository.findByBoardTitleContainingAndBoardDeleteFlagFalse(keyword, pageable);
             case CONTENT ->
-                    boardRepository.findByBoardContentsContainingAndBoardDeleteFlagFalse(keyword,pageable);
+                    boardRepository.findByBoardContentsContainingAndBoardDeleteFlagFalse(keyword, pageable);
             case WRITER ->
-                    boardRepository.findByUser_NicknameAndBoardDeleteFlagFalse(keyword,pageable);
+                    boardRepository.findByUser_NicknameContainingAndBoardDeleteFlagFalse(keyword, pageable);
         };
 
         return PageResponse.from(boards.map(BoardMapper::toBoardResponseDto));
