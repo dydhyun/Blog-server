@@ -67,8 +67,19 @@ public class MyPageController {
                 null, UserMessage.USER_INFO_CHANGE.message(), UserMessage.USER_INFO_CHANGE.code()));
     }
 
+    @Operation(
+            summary = "마이페이지 사용자 계정 삭제",
+            description = "로그인 된 사용자의 마이페이지에서 사용하는 사용자 계정 소프트 딜리트 입니다."
+    )
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "계정 삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "계정 삭제 실패")
+    })
     @DeleteMapping("")
-    public ResponseEntity<ResponseDto<Void>> deleteMyAccount(){
+    public ResponseEntity<ResponseDto<Void>> deleteMyAccount(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        String userId = customUserDetails.getUserId();
+
+        myPageUseCase.deleteMyAccount(userId);
 
         return ResponseEntity.ok(ResponseDto.success(
                 null, UserMessage.USER_DELETE_SUCCESS.message(), UserMessage.USER_DELETE_SUCCESS.code()));
