@@ -26,4 +26,9 @@ public class MyPageUseCaseImpl implements MyPageUseCase {
         userService.updateMyPage(userId, userUpdateRequestDto);
     }
 
+    @Override
+    public void deleteMyAccount(String userId) {
+        userService.deleteMyAccount(userId);
+    }
+
 }

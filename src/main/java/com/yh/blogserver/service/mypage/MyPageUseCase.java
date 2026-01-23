@@ -8,4 +8,6 @@ public interface MyPageUseCase {
     UserResponseDto getMyPage(String userId);
 
     void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto);
+
+    void deleteMyAccount(String userId);
 }
