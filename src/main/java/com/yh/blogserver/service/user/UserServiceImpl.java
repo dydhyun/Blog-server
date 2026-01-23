@@ -127,9 +127,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseDto getUserByUserId(String userId) {
 
-        Optional<User> foundUser = userRepository.findByUserId(userId);
+        User foundUser = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
         
-        return UserMapper.toUserResponseDto(foundUser.orElseThrow());
+        return UserMapper.toUserResponseDto(foundUser);
     }
 
     @Override
