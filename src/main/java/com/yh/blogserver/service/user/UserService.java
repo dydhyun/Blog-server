@@ -34,4 +34,6 @@ public interface UserService {
     BlogHeaderDto getBlogHeader(String userId);
 
     void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto);
+
+    void deleteMyAccount(String userId);
 }

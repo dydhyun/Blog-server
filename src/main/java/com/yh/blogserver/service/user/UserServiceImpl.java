@@ -201,4 +201,15 @@ public class UserServiceImpl implements UserService{
 
         user.update(userUpdateRequestDto);
     }
+
+    @Override
+    @Transactional
+    public void deleteMyAccount(String userId) {
+        log.info("DELETE MY_ACCOUNT 메서드 실행");
+
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+
+        user.markAsDeleted();
+    }
 }
