@@ -21,6 +21,10 @@ public record UserRequestDto(
         @Schema(description = "사용자 핸드폰 번호. 숫자만 입력받아 문자열로 저장", example = "01012342365")
         String pNumber,
         @Schema(description = "사용자 이메일.", example = "dydgus625@naver.com")
-        String email
+        String email,
+        @Schema(description = "사용자 블로그 소개글", example = "안녕하세요 안용현의 개발 블로그입니다.")
+        String description,
+        @Schema(description = "프로필 이미지 url")
+        String profileImageUrl
 ) {
 }
