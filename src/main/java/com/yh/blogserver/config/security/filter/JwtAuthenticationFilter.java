@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -65,6 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             CustomUserDetails customUserDetails =
                     customUserDetailsService.loadUserByUserId(userId);
 
+            if (!customUserDetails.isEnabled()) {
+                throw new DisabledException("Disabled user");
+            }
+
             // SecurityContext에 인증 객체 생성
             // authorities 는 Collection<? extends GrantedAuthority> 타입.
             // GrantedAuthority → 스프링 시큐리티에서 권한(roles, 권한 이름) 을 표현하는 인터페이스
@@ -87,7 +92,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             log.info("[JWT FILTER END] authentication={}", auth);
 
-        } catch (JwtException e) {
+        }
+        catch (DisabledException e) {
+            SecurityContextHolder.clearContext();
+            authenticationEntryPoint.commence(request, response, e);
+            return;
+        }
+
+        catch (JwtException e) {
             SecurityContextHolder.clearContext();
             // Spring Security는 ThreadLocal 기반이기 때문에
             // 인증 실패 시 SecurityContext를 명시적으로 정리하지 않으면
