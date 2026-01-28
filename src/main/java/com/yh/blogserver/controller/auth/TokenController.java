@@ -3,10 +3,8 @@ package com.yh.blogserver.controller.auth;
 import com.yh.blogserver.dto.auth.TokenPair;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.response.ResponseDto;
-import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.auth.AuthService;
-import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.AuthMessage;
 import com.yh.blogserver.util.message.UserMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,11 +28,11 @@ import org.springframework.web.bind.annotation.*;
 public class TokenController {
 
     private final AuthService authService;
-    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
-    public TokenController(AuthService authService, UserService userService) {
+    public TokenController(AuthService authService, AuthenticationManager authenticationManager) {
         this.authService = authService;
-        this.userService = userService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Operation(
@@ -46,12 +47,26 @@ public class TokenController {
             @ApiResponse(responseCode = "400", description = "로그인 실패")
     })
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<UserResponseDto>> login(@RequestBody UserRequestDto loginRequest){
+    public ResponseEntity<ResponseDto<Void>> login(@RequestBody UserRequestDto loginRequest){
         log.info("[USER LOGIN 요청] userRequestDto={}", loginRequest);
 
-        UserResponseDto loginedUserDto = userService.login(loginRequest);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.userId(),loginRequest.userPw());
 
-        TokenPair tokenPair = authService.issue(loginedUserDto.userId());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        // authenticationManager.authenticate(authenticationToken) 실행 시
+        // CustomUserDetailsService 호출
+        // DB 조회
+        // passwordEncoder.matches() : componentScan 을 통해 PasswordEncodingConfig 자동주입
+        // isEnabled() 호출
+        // 실패 시 예외 throw
+        // 성공 시 Authentication 반환
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        String userId = customUserDetails.getUsername();
+
+        TokenPair tokenPair = authService.issue(userId);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization","Bearer " + tokenPair.accessToken());
@@ -64,7 +79,7 @@ public class TokenController {
                         "; Max-Age=604800");
 
         return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders)
-                .body(ResponseDto.success(loginedUserDto, UserMessage.LOGGED_IN.message(), HttpStatus.OK.value()));
+                .body(ResponseDto.success(null, UserMessage.LOGGED_IN.message(), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -79,7 +94,7 @@ public class TokenController {
     @PostMapping("/logout")
     public ResponseEntity<ResponseDto<Void>> logout(@AuthenticationPrincipal CustomUserDetails customUserDetails){
 
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         log.info("[USER LOGOUT 요청] userId={}", userId);
 
