@@ -51,7 +51,7 @@ public class BoardController {
     public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                      @RequestBody BoardRequestDto boardRequestDto){
 
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         log.info("[BOARD CREATE 요청] boardTitle={}, userId={}", boardRequestDto.boardTitle(), userId);
 
@@ -81,7 +81,7 @@ public class BoardController {
                                                                      @PathVariable Long boardIndex,
                                                                      @RequestBody BoardUpdateRequestDto boardRequestDto){
 
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         log.info("[BOARD UPDATE 요청] boardIndex={}, userId={}", boardIndex, userId);
 
@@ -110,7 +110,7 @@ public class BoardController {
     public ResponseEntity<ResponseDto<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                          @PathVariable Long boardIndex){
 
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         log.info("[BOARD DELETE 요청] boardIndex={}, userId={}", boardIndex, userId);
 

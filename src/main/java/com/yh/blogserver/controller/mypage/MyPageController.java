@@ -40,7 +40,7 @@ public class MyPageController {
     })
     @GetMapping("")
     public ResponseEntity<ResponseDto<UserResponseDto>> getMyPage(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         UserResponseDto responseDto = myPageUseCase.getMyPage(userId);
 
@@ -59,7 +59,7 @@ public class MyPageController {
     @PatchMapping("")
     public ResponseEntity<ResponseDto<Void>> updateMyPage(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                          @RequestBody UserUpdateRequestDto userUpdateRequestDto){
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         myPageUseCase.updateMyPage(userId, userUpdateRequestDto);
 
@@ -77,7 +77,7 @@ public class MyPageController {
     })
     @DeleteMapping("")
     public ResponseEntity<ResponseDto<Void>> deleteMyAccount(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        String userId = customUserDetails.getUserId();
+        String userId = customUserDetails.getUsername();
 
         myPageUseCase.deleteMyAccount(userId);
 
