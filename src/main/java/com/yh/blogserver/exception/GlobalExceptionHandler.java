@@ -1,9 +1,13 @@
 package com.yh.blogserver.exception;
 
+import com.yh.blogserver.config.security.message.AuthErrorMessage;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.util.message.MessageCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,6 +34,15 @@ public class GlobalExceptionHandler {
     // 501 : NOT IMPLEMENTED
     // 502 : BAD GATEWAY
     // 504 : GATEWAY TIMEOUT
+
+    @ExceptionHandler({
+            BadCredentialsException.class,
+            UsernameNotFoundException.class})
+    public ResponseEntity<ResponseDto<?>> handleBadCredentials() {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseDto.error(AuthErrorMessage.BAD_CREDENTIALS.message(), AuthErrorMessage.BAD_CREDENTIALS.code()));
+    }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ResponseDto<?>> handleCustomException(CustomException e) {
