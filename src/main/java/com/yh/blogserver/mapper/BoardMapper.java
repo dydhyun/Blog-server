@@ -25,12 +25,12 @@ public class BoardMapper {
 
     public static Board fromDto(BoardRequestDto boardRequestDto, User user){
         return Board.builder()
-                .boardIndex(boardRequestDto.boardIndex())
+//                .boardIndex(boardRequestDto.boardIndex())
                 .user(user)
                 .boardTitle(boardRequestDto.boardTitle())
                 .boardContents(boardRequestDto.boardContents())
-                .boardCreatedTime(boardRequestDto.boardCreatedTime())
-                .boardViewCnt(boardRequestDto.boardViewCnt())
+//                .boardCreatedTime(boardRequestDto.boardCreatedTime())
+//                .boardViewCnt(boardRequestDto.boardViewCnt())
                 .build();
     }
 }
