@@ -19,7 +19,7 @@ public interface UserService {
 
     UserResponseDto join(UserRequestDto userRequestDto);
 
-    UserResponseDto login(UserRequestDto userRequestDto);
+//    UserResponseDto login(UserRequestDto userRequestDto);
 
     UserResponseDto getUserByUserId(String UserId);
 
@@ -27,7 +27,7 @@ public interface UserService {
 
     String authenticatedUser(String token);
 
-    boolean isAdmin(String userId);
+//    boolean isAdmin(String userId);
 
     Map<String, BlogHeaderDto> getBlogHeadersByUserIds(Set<String> userIds);
 

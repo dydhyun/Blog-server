@@ -111,18 +111,18 @@ public class UserServiceImpl implements UserService{
         return UserMapper.toUserResponseDto(joinedUser);
     }
 
-    @Override
-    public UserResponseDto login(UserRequestDto userRequestDto) {
-
-        User foundUser = userRepository.findByUserId(userRequestDto.userId())
-                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
-
-        if (!passwordEncoder.matches(userRequestDto.userPw(), foundUser.getUserPw())){
-            throw new CustomException(UserMessage.LOGIN_FAIL);
-        }
-
-        return UserMapper.toUserResponseDto(foundUser);
-    }
+//    @Override
+//    public UserResponseDto login(UserRequestDto userRequestDto) {
+//
+//        User foundUser = userRepository.findByUserId(userRequestDto.userId())
+//                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+//
+//        if (!passwordEncoder.matches(userRequestDto.userPw(), foundUser.getUserPw())){
+//            throw new CustomException(UserMessage.LOGIN_FAIL);
+//        }
+//
+//        return UserMapper.toUserResponseDto(foundUser);
+//    }
 
     @Override
     public UserResponseDto getUserByUserId(String userId) {
@@ -159,10 +159,10 @@ public class UserServiceImpl implements UserService{
         return userId;
     }
 
-    @Override
-    public boolean isAdmin(String userId) {
-        return getUserByUserId(userId).isAdmin();
-    }
+//    @Override
+//    public boolean isAdmin(String userId) {
+//        return getUserByUserId(userId).isAdmin();
+//    }
 
     @Override
     public Map<String, BlogHeaderDto> getBlogHeadersByUserIds(Set<String> userIds) {
