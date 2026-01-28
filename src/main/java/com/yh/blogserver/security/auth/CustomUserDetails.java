@@ -1,5 +1,6 @@
 package com.yh.blogserver.security.auth;
 
+import com.yh.blogserver.entity.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,34 +13,31 @@ import java.util.List;
 @Getter
 public class CustomUserDetails implements UserDetails {
 
-    private final String userId;
-    private final String role;
-    private final boolean userDeleted;
+    private final User user;
 
-    public CustomUserDetails(String userId, boolean isAdmin, boolean userDeleted) {
-        this.userId = userId;
-        this.role = isAdmin ? "ROLE_ADMIN" : "ROLE_USER";
-        this.userDeleted = userDeleted;
+    public CustomUserDetails( User user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = user.getIsAdmin() ? "ROLE_ADMIN" : "ROLE_USER";
         return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override
-    public boolean isEnabled() {
-        return !userDeleted;
-    }
-
-    @Override
     public String getUsername() {
-        return userId;
+        return user.getUserId();
     }
 
     @Override
     public String getPassword() {
-        return null; // JWT 기반이므로 사용 안 함
+        return user.getUserPw();
+    }
+
+    @Override
+    public boolean isEnabled(){
+        return !user.getUserDeleteFlag();
     }
 
     @Override public boolean isAccountNonExpired() { return true; }
