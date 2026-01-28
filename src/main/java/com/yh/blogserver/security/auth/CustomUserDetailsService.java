@@ -1,9 +1,7 @@
 package com.yh.blogserver.security.auth;
 
 import com.yh.blogserver.entity.User;
-import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.repository.user.UserRepository;
-import com.yh.blogserver.util.message.UserMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,21 +17,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
-
-    public CustomUserDetails loadUserByUserId(String userId) {
+    public UserDetails loadUserByUsername(String userId) {
 
         User user = userRepository.findByUserId(userId).orElseThrow(
-                ()-> new CustomException(UserMessage.USER_NOT_FOUND)
-        );
+                ()-> new UsernameNotFoundException("USER NOT EXIST"));
 
-        return new CustomUserDetails(
-                user.getUserId(),
-                user.getIsAdmin(),
-                user.getUserDeleteFlag()
-        );
+        return new CustomUserDetails(user);
     }
 
 }
