@@ -1,7 +1,6 @@
 package com.yh.blogserver.config.security.filter;
 
 import com.yh.blogserver.config.security.jwt.JwtTokenProvider;
-import com.yh.blogserver.security.auth.CustomUserDetails;
 import com.yh.blogserver.security.auth.CustomUserDetailsService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -13,9 +12,8 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -23,8 +21,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -63,26 +59,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String userId = jwtTokenProvider.getUserIdFromToken(token);
 
-            CustomUserDetails customUserDetails =
-                    customUserDetailsService.loadUserByUserId(userId);
+            UserDetails userDetails =
+                    customUserDetailsService.loadUserByUsername(userId);
 
-            if (!customUserDetails.isEnabled()) {
+            if (!userDetails.isEnabled()) {
                 throw new DisabledException("Disabled user");
             }
 
             // SecurityContext에 인증 객체 생성
-            // authorities 는 Collection<? extends GrantedAuthority> 타입.
-            // GrantedAuthority → 스프링 시큐리티에서 권한(roles, 권한 이름) 을 표현하는 인터페이스
-            // 한 사용자에게 여러 권한이 있을 수 있기 때문에 리스트나 세트 형태로 제공
-            List<GrantedAuthority> authorities = new ArrayList<>();
-            // springSecurity 규약 -> ROLE prefix
-            authorities.add(new SimpleGrantedAuthority(customUserDetails.getRole()));
-
-
             // 인증 성공 → SecurityContext 에 Authentication 세팅
             // Principal 객체로 사용자 ID 대신 CustomUserDetails 객체 사용 가능
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(customUserDetails, null, authorities);
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities());
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -93,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("[JWT FILTER END] authentication={}", auth);
 
         }
-        catch (DisabledException e) {
+        catch ( DisabledException e) {
             SecurityContextHolder.clearContext();
             authenticationEntryPoint.commence(request, response, e);
             return;
