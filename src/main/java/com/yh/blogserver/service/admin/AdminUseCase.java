@@ -9,4 +9,6 @@ public interface AdminUseCase {
     PageResponse<UserResponseDto> getDeletedUsers(Pageable pageable);
 
     void deleteUser(String userId);
+
+    void restoreUser(String userId);
 }

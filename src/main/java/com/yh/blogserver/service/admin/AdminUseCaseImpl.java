@@ -30,4 +30,9 @@ public class AdminUseCaseImpl implements AdminUseCase{
     public void deleteUser(String userId) {
         userService.deleteAccount(userId);
     }
+
+    @Override
+    public void restoreUser(String userId) {
+        userService.restoreAccount(userId);
+    }
 }

@@ -138,7 +138,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserEntityByUserId(String userId) {
-        return userRepository.findByUserId(userId).orElseThrow();
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
     }
 
     @Override // 삭제예정 - 테스트 코드에서 사용중인 임시 메서드
@@ -227,6 +228,15 @@ public class UserServiceImpl implements UserService{
                 foundUserList.map(UserMapper::toUserResponseDto);
 
         return PageResponse.from(userResponseDtosPage);
+    }
+
+    @Override
+    @Transactional
+    public void restoreAccount(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+
+        user.deleteRestore();
     }
 
 }

@@ -40,4 +40,6 @@ public interface UserService {
     void deleteAccount(String userId);
 
     PageResponse<UserResponseDto> getDeletedUser(Pageable pageable);
+
+    void restoreAccount(String userId);
 }
