@@ -2,6 +2,8 @@ package com.yh.blogserver.repository.user;
 
 import com.yh.blogserver.dto.response.BlogHeaderDto;
 import com.yh.blogserver.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -65,4 +67,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     AND u.userDeletedAt <= :expiredTime
     """)
     int deleteExpiredUser(@Param("expiredTime") LocalDateTime expiredTime);
+
+    Page<User> findByUserDeleteFlagTrue(Pageable pageable);
 }
