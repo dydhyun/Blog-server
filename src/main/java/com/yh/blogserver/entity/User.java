@@ -40,7 +40,7 @@ public class User {
     private Boolean isAdmin;
 
     @Column(updatable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime userCreatedTime;
     private Boolean userDeleteFlag;
     private LocalDateTime userDeletedAt = null;
 
@@ -53,7 +53,7 @@ public class User {
     @PrePersist
     private void prePersist(){
         this.isAdmin = false;
-        this.createdDate = LocalDateTime.now();
+        this.userCreatedTime = LocalDateTime.now();
         this.userDeleteFlag = false;
     }
 

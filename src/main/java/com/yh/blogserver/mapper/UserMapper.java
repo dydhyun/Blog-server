@@ -18,7 +18,7 @@ public class UserMapper {
                 .addressDetail(user.getAddressDetail())
                 .email(user.getEmail())
                 .isAdmin(user.getIsAdmin())
-                .createdDate(user.getCreatedDate())
+                .userCreatedTime(user.getUserCreatedTime())
                 .description(user.getDescription())
                 .profileImageUrl(user.getProfileImageUrl())
                 .build();
