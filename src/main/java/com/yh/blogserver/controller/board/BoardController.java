@@ -135,7 +135,7 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @GetMapping("/{boardIndex}")
-    public ResponseEntity<ResponseDto<BoardResponseDto>> readBoard(@PathVariable Long boardIndex) {
+    public ResponseEntity<ResponseDto<BoardResponseDto>> getBoard(@PathVariable Long boardIndex) {
         log.info("[BOARD READ 요청] boardIndex={}", boardIndex);
 
         BoardResponseDto boardResponseDto = boardService.getBoard(boardIndex);
