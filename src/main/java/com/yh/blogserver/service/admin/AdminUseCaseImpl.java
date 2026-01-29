@@ -25,4 +25,9 @@ public class AdminUseCaseImpl implements AdminUseCase{
     public PageResponse<UserResponseDto> getDeletedUsers(Pageable pageable) {
         return userService.getDeletedUser(pageable);
     }
+
+    @Override
+    public void deleteUser(String userId) {
+        userService.deleteAccount(userId);
+    }
 }
