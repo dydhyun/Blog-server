@@ -127,4 +127,13 @@ public class BoardServiceImpl implements BoardService {
 
         return boardRepository.findBoardSummariesByUserId(userId, pageable);
     }
+
+    @Override
+    @Transactional
+    public void deleteBoardByAdmin(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(BoardMessage.BOARD_NOT_FOUND));
+        board.markAsDeleted();
+    }
+
 }

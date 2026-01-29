@@ -29,4 +29,6 @@ public interface BoardService {
     List<BlogBoardSummaryDto> getNewestBoards(int limit);
 
     Page<BlogBoardSummaryDto> getBoardSummariesByUser(String userId, Pageable pageable);
+
+    void deleteBoardByAdmin(Long boardId);
 }

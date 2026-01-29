@@ -35,4 +35,9 @@ public class AdminUseCaseImpl implements AdminUseCase{
     public void restoreUser(String userId) {
         userService.restoreAccount(userId);
     }
+
+    @Override
+    public void deleteBoard(Long boardId) {
+        boardService.deleteBoardByAdmin(boardId);
+    }
 }

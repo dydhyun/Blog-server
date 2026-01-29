@@ -11,4 +11,6 @@ public interface AdminUseCase {
     void deleteUser(String userId);
 
     void restoreUser(String userId);
+
+    void deleteBoard(Long boardId);
 }
