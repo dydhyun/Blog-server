@@ -60,8 +60,7 @@ public class AdminController {
     })
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<ResponseDto<Void>> deleteUser(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @PathVariable String userId){
+            @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable String userId){
 
         String adminId = customUserDetails.getUsername();
         log.info("[ADMIN deleteUser 요청] adminId = {}, targetId = {}",adminId, userId);
@@ -80,10 +79,17 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "유저복구 성공"),
             @ApiResponse(responseCode = "400", description = "유저복구 실패")
     })
-    @PostMapping()
-    public ResponseEntity<ResponseDto<Void>> restoreUser(){
+    @PatchMapping("/users/{userId}")
+    public ResponseEntity<ResponseDto<Void>> restoreUser(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable String userId){
 
-        return null;
+        String adminId = customUserDetails.getUsername();
+        log.info("[ADMIN restoreUser 요청] adminId = {}, targetId = {}", adminId, userId);
+
+        adminUseCase.restoreUser(userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(null, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
     @Operation(summary = "관리자 권한 게시글 삭제 API",
