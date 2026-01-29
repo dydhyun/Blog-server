@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import com.yh.blogserver.dto.response.BlogHeaderDto;
+import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
 import com.yh.blogserver.exception.CustomException;
@@ -12,6 +13,8 @@ import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
 import com.yh.blogserver.util.message.UserMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -213,4 +216,17 @@ public class UserServiceImpl implements UserService{
 
         user.markAsDeleted();
     }
+
+    @Override
+    public PageResponse<UserResponseDto> getDeletedUser(Pageable pageable) {
+        log.info("GET DELETED_USER 메서드 실행");
+
+        Page<User> foundUserList = userRepository.findByUserDeleteFlagTrue(pageable);
+
+        Page<UserResponseDto> userResponseDtosPage =
+                foundUserList.map(UserMapper::toUserResponseDto);
+
+        return PageResponse.from(userResponseDtosPage);
+    }
+
 }

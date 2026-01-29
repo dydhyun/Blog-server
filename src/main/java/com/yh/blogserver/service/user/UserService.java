@@ -3,8 +3,10 @@ package com.yh.blogserver.service.user;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import com.yh.blogserver.dto.response.BlogHeaderDto;
+import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.entity.User;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Map;
 import java.util.Set;
@@ -36,4 +38,6 @@ public interface UserService {
     void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto);
 
     void deleteMyAccount(String userId);
+
+    PageResponse<UserResponseDto> getDeletedUser(Pageable pageable);
 }
