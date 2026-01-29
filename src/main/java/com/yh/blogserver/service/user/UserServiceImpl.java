@@ -236,7 +236,7 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
 
-        user.deleteRestore();
+        user.markAsActive();
     }
 
 }
