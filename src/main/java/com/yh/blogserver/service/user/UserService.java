@@ -37,7 +37,7 @@ public interface UserService {
 
     void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto);
 
-    void deleteMyAccount(String userId);
+    void deleteAccount(String userId);
 
     PageResponse<UserResponseDto> getDeletedUser(Pageable pageable);
 }
