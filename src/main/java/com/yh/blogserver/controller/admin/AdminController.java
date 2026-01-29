@@ -99,10 +99,17 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
             @ApiResponse(responseCode = "400", description = "게시글 삭제 실패")
     })
-    @DeleteMapping("/boards")
-    public ResponseEntity<ResponseDto<Void>> deleteBoard(){
+    @DeleteMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<Void>> deleteBoard(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long boardId){
 
-        return null;
+        String adminId = customUserDetails.getUsername();
+        log.info("[ADMIN deleteBoard 요청] adminId = {}, targetId = {}", adminId, boardId);
+
+        adminUseCase.deleteBoard(boardId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
     }
 
 
