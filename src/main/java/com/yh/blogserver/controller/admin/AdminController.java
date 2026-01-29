@@ -42,8 +42,8 @@ public class AdminController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PageableDefault(size = 20, sort = "userCreatedTime") Pageable pageable){
 
-        String userId = customUserDetails.getUsername();
-        log.info("[ADMIN getDeletedUsers 요청] adminId = {}", userId);
+        String adminId = customUserDetails.getUsername();
+        log.info("[ADMIN getDeletedUsers 요청] adminId = {}", adminId);
 
         PageResponse<UserResponseDto> deletedUsers = adminUseCase.getDeletedUsers(pageable);
 
@@ -58,10 +58,19 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "유저탈퇴 성공"),
             @ApiResponse(responseCode = "400", description = "유저탈퇴 실패")
     })
-    @DeleteMapping("/users")
-    public ResponseEntity<ResponseDto<Void>> deletedUserByAdmin(){
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<ResponseDto<Void>> deleteUser(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable String userId){
 
-        return null;
+        String adminId = customUserDetails.getUsername();
+        log.info("[ADMIN deleteUser 요청] adminId = {}, targetId = {}",adminId, userId);
+
+        adminUseCase.deleteUser(userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(null, ResponseMessage.OK.message(), HttpStatus.OK.value()));
+
     }
 
     @Operation(summary = "관리자 권한 유저 탈퇴 철회 API",
@@ -72,7 +81,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "유저복구 실패")
     })
     @PostMapping()
-    public ResponseEntity<ResponseDto<Void>> activeUserByAdmin(){
+    public ResponseEntity<ResponseDto<Void>> restoreUser(){
 
         return null;
     }
@@ -85,7 +94,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "게시글 삭제 실패")
     })
     @DeleteMapping("/boards")
-    public ResponseEntity<ResponseDto<Void>> deleteBoardByAdmin(){
+    public ResponseEntity<ResponseDto<Void>> deleteBoard(){
 
         return null;
     }
