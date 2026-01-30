@@ -77,4 +77,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
         order by b.boardCreatedTime desc
     """)
     Page<BlogBoardSummaryDto> findBoardSummariesByUserId(@Param("userId") String userId, Pageable pageable);
+
+    @Modifying
+    @Query("update Board b set b.boardViewCnt = b.boardViewCnt + 1 where b.boardIndex = :boardIndex")
+    void increaseBoardViewCount(@Param("boardIndex") Long boardIndex);
 }
