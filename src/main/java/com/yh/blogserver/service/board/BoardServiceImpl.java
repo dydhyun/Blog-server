@@ -13,7 +13,6 @@ import com.yh.blogserver.mapper.BoardMapper;
 import com.yh.blogserver.repository.board.BoardRepository;
 import com.yh.blogserver.service.user.UserService;
 import com.yh.blogserver.util.message.BoardMessage;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
