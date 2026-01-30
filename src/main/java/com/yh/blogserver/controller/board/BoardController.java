@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,11 +46,12 @@ public class BoardController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "글 작성 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 (DTO 형식 오류 등)")
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패 (제목 혹은 내용 미작성 등)"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 요청 (미 로그인 등)")
     })
     @PostMapping("")
     public ResponseEntity<ResponseDto<BoardResponseDto>> createBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                     @RequestBody BoardRequestDto boardRequestDto){
+                                                                     @Valid @RequestBody BoardRequestDto boardRequestDto){
 
         String userId = customUserDetails.getUsername();
 
@@ -72,7 +74,7 @@ public class BoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "글 수정 성공"),
-            @ApiResponse(responseCode = "400", description = "글 수정 실패"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 요청 (미 로그인 등)"),
             @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
@@ -87,8 +89,6 @@ public class BoardController {
 
         BoardResponseDto updatedBoard = boardService.updateBoard(boardIndex, boardRequestDto, userId);
 
-        log.info("[BOARD UPDATE 성공] userId={} 가 boardIndex={} 갱신", userId, boardIndex);
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(updatedBoard, ResponseMessage.UPDATED.message(), HttpStatus.OK.value()));
     }
@@ -101,27 +101,24 @@ public class BoardController {
                     """
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "글 삭제 성공"),
+            @ApiResponse(responseCode = "204", description = "글 삭제 성공"),
             @ApiResponse(responseCode = "400", description = "이미 삭제된 게시글"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 요청 (미 로그인 등)"),
             @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @DeleteMapping("/{boardIndex}")
-    public ResponseEntity<ResponseDto<Void>> deleteBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                         @PathVariable Long boardIndex){
+    public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                         @PathVariable Long boardIndex) {
 
         String userId = customUserDetails.getUsername();
 
         log.info("[BOARD DELETE 요청] boardIndex={}, userId={}", boardIndex, userId);
 
-
         boardService.deleteBoard(boardIndex, userId);
 
-        log.info("[BOARD DELETE 성공] userId={} 가 boardIndex={} 삭제", userId, boardIndex);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
-    }// 204 NO_CONTENT 는 body가 없음. -> ResponseEntity.noContent().build()
+        return ResponseEntity.noContent().build();
+    }
 
     @Operation(
             summary = "게시글 단건 조회",
@@ -131,7 +128,6 @@ public class BoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "조회 실패"),
             @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @GetMapping("/{boardIndex}")
@@ -156,8 +152,8 @@ public class BoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "조회 실패"),
-            @ApiResponse(responseCode = "404", description = "게시글 없음")
+            @ApiResponse(responseCode = "400", description = "조회 실패 (검색어 미기재)")
+//            @ApiResponse(responseCode = "404", description = "게시글 없음")
     })
     @GetMapping()
     public ResponseEntity<ResponseDto<PageResponse<BoardResponseDto>>> searchBoards(@RequestParam BoardSearchCondition searchCondition,
