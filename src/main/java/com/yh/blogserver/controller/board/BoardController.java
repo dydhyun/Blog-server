@@ -102,10 +102,10 @@ public class BoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "글 삭제 성공"),
-            @ApiResponse(responseCode = "400", description = "이미 삭제된 게시글"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 요청 (미 로그인 등)"),
             @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
-            @ApiResponse(responseCode = "404", description = "게시글 없음")
+            @ApiResponse(responseCode = "404", description = "게시글 없음"),
+            @ApiResponse(responseCode = "409", description = "이미 삭제된 게시글")
     })
     @DeleteMapping("/{boardIndex}")
     public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal CustomUserDetails customUserDetails,
