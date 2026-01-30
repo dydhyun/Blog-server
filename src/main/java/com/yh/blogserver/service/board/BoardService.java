@@ -22,7 +22,7 @@ public interface BoardService {
 
     void deleteBoard(Long boardIndex, String userId);
 
-    Boolean isWriter(Board board, String userId);
+    void validWriter(Board board, String userId);
 
     PageResponse<BoardResponseDto> searchBoards(BoardSearchCondition searchCondition, String keyword, Pageable pageable);
 
