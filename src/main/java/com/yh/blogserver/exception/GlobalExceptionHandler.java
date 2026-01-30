@@ -2,12 +2,14 @@ package com.yh.blogserver.exception;
 
 import com.yh.blogserver.config.security.message.AuthErrorMessage;
 import com.yh.blogserver.dto.response.ResponseDto;
+import com.yh.blogserver.util.message.BoardMessage;
 import com.yh.blogserver.util.message.MessageCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,6 +37,18 @@ public class GlobalExceptionHandler {
     // 502 : BAD GATEWAY
     // 504 : GATEWAY TIMEOUT
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseDto<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
+        String message = e.getBindingResult()
+                .getFieldErrors()
+                .get(0)
+                .getDefaultMessage();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseDto.error(message, "COMMON-400-1"));
+    }
+
     @ExceptionHandler({
             BadCredentialsException.class,
             UsernameNotFoundException.class})
@@ -56,8 +70,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto<?>> handleGeneralException(Exception e) {
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseDto.error(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ResponseDto.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
     // uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") 요청 처리
