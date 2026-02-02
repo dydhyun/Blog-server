@@ -23,7 +23,7 @@ public class AdminUseCaseImpl implements AdminUseCase{
     // 정렬기능 추가
     @Override
     public PageResponse<UserResponseDto> getDeletedUsers(Pageable pageable) {
-        return userService.getDeletedUser(pageable);
+        return userService.getDeletedUsers(pageable);
     }
 
     @Override
