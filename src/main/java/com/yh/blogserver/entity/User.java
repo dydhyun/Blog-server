@@ -41,7 +41,7 @@ public class User {
 
     @Column(updatable = false)
     private LocalDateTime userCreatedTime;
-    private Boolean userDeleteFlag;
+    private boolean userDeleteFlag;
     private LocalDateTime userDeletedAt = null;
 
     public void markAsDeleted() {

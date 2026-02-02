@@ -37,7 +37,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled(){
-        return !user.getUserDeleteFlag();
+        return !user.isUserDeleteFlag();
     }
 
     @Override public boolean isAccountNonExpired() { return true; }
