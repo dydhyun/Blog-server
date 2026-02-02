@@ -112,6 +112,24 @@ public class AdminController {
                 .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
     }
 
+    @Operation(summary = "관리자 권한 게시글 삭제 철회 API",
+            description = "관리자 권한으로 게시글의 deleteFlag 초기화 (게시글 복구) 하는 API"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글복구 성공"),
+            @ApiResponse(responseCode = "400", description = "게시글복구 실패")
+    })
+    @PatchMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<Void>> restoreBoard(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long boardId){
 
-    // 관리자 권한 유저 소프트삭제 , 관리자 권한 게시물 소프트 삭제
+        String adminId = customUserDetails.getUsername();
+        log.info("[ADMIN restoreBoard 요청] adminId = {}, targetId = {}", adminId, boardId);
+
+        adminUseCase.restoreBoard(boardId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(null, ResponseMessage.OK.message(), HttpStatus.OK.value()));
+    }
+
 }
