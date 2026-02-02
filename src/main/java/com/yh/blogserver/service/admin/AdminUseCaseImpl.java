@@ -40,4 +40,9 @@ public class AdminUseCaseImpl implements AdminUseCase{
     public void deleteBoard(Long boardId) {
         boardService.deleteBoardByAdmin(boardId);
     }
+
+    @Override
+    public void restoreBoard(Long boardId) {
+        boardService.restoreBoard(boardId);
+    }
 }

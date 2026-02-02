@@ -31,4 +31,6 @@ public interface BoardService {
     Page<BlogBoardSummaryDto> getBoardSummariesByUser(String userId, Pageable pageable);
 
     void deleteBoardByAdmin(Long boardId);
+
+    void restoreBoard(Long boardId);
 }

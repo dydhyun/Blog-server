@@ -142,4 +142,11 @@ public class BoardServiceImpl implements BoardService {
         board.markAsDeleted();
     }
 
+    @Override
+    @Transactional
+    public void restoreBoard(Long boardId) {
+        Board board = getBoardOrThrow(boardId);
+        board.markAsActive();
+    }
+
 }
