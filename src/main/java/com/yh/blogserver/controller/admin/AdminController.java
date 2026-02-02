@@ -55,11 +55,11 @@ public class AdminController {
             description = "관리자 권한으로 유저의 deleteFlag 활성화 (소프트딜리트) 하는 API"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "유저탈퇴 성공"),
-            @ApiResponse(responseCode = "400", description = "유저탈퇴 실패")
+            @ApiResponse(responseCode = "204", description = "유저탈퇴 성공"),
+            @ApiResponse(responseCode = "409", description = "유저탈퇴 실패 이미 탈퇴한 유저")
     })
     @DeleteMapping("/users/{userId}")
-    public ResponseEntity<ResponseDto<Void>> deleteUser(
+    public ResponseEntity<Void> deleteUser(
             @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable String userId){
 
         String adminId = customUserDetails.getUsername();
@@ -67,20 +67,18 @@ public class AdminController {
 
         adminUseCase.deleteUser(userId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, ResponseMessage.OK.message(), HttpStatus.OK.value()));
-
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "관리자 권한 유저 탈퇴 철회 API",
             description = "관리자 권한으로 유저의 deleteFlag 초기화 (계정 복구) 하는 API"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "유저복구 성공"),
-            @ApiResponse(responseCode = "400", description = "유저복구 실패")
+            @ApiResponse(responseCode = "204", description = "유저복구 성공"),
+            @ApiResponse(responseCode = "409", description = "유저복구 실패 탈퇴하지 않은 유저")
     })
-    @PatchMapping("/users/{userId}")
-    public ResponseEntity<ResponseDto<Void>> restoreUser(
+    @PatchMapping("/users/{userId}/restore")
+    public ResponseEntity<Void> restoreUser(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable String userId){
 
         String adminId = customUserDetails.getUsername();
@@ -88,19 +86,18 @@ public class AdminController {
 
         adminUseCase.restoreUser(userId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, ResponseMessage.OK.message(), HttpStatus.OK.value()));
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "관리자 권한 게시글 삭제 API",
             description = "관리자 권한으로 게시글의 deleteFlag 활성화 (소프트딜리트) 하는 API"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
-            @ApiResponse(responseCode = "400", description = "게시글 삭제 실패")
+            @ApiResponse(responseCode = "204", description = "게시글 삭제 성공"),
+            @ApiResponse(responseCode = "409", description = "게시글 삭제 실패 이미 삭제된 게시글")
     })
     @DeleteMapping("/boards/{boardId}")
-    public ResponseEntity<ResponseDto<Void>> deleteBoard(
+    public ResponseEntity<Void> deleteBoard(
             @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long boardId){
 
         String adminId = customUserDetails.getUsername();
@@ -108,19 +105,18 @@ public class AdminController {
 
         adminUseCase.deleteBoard(boardId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, ResponseMessage.DELETED.message(), HttpStatus.OK.value()));
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "관리자 권한 게시글 삭제 철회 API",
             description = "관리자 권한으로 게시글의 deleteFlag 초기화 (게시글 복구) 하는 API"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "게시글복구 성공"),
-            @ApiResponse(responseCode = "400", description = "게시글복구 실패")
+            @ApiResponse(responseCode = "204", description = "게시글복구 성공"),
+            @ApiResponse(responseCode = "409", description = "게시글복구 실패 삭제하지 않은 게시글")
     })
-    @PatchMapping("/boards/{boardId}")
-    public ResponseEntity<ResponseDto<Void>> restoreBoard(
+    @PatchMapping("/boards/{boardId}/restore")
+    public ResponseEntity<Void> restoreBoard(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long boardId){
 
         String adminId = customUserDetails.getUsername();
@@ -128,8 +124,7 @@ public class AdminController {
 
         adminUseCase.restoreBoard(boardId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(null, ResponseMessage.OK.message(), HttpStatus.OK.value()));
+        return ResponseEntity.noContent().build();
     }
 
 }
