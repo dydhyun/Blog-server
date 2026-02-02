@@ -139,6 +139,9 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public void deleteBoardByAdmin(Long boardId) {
         Board board = getBoardOrThrow(boardId);
+        if (board.isBoardDeleteFlag()) {
+            throw new CustomException(BoardMessage.ALREADY_DELETED);
+        }
         board.markAsDeleted();
     }
 
@@ -146,6 +149,9 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public void restoreBoard(Long boardId) {
         Board board = getBoardOrThrow(boardId);
+        if (!board.isBoardDeleteFlag()) {
+            throw new CustomException(BoardMessage.ALREADY_ACTIVE);
+        }
         board.markAsActive();
     }
 
