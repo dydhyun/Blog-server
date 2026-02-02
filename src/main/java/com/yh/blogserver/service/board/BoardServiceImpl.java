@@ -49,7 +49,7 @@ public class BoardServiceImpl implements BoardService {
 //            throw new CustomException(BoardMessage.BOARD_CAN_NOT_EMPTY);
 //        }
 
-        User user = userService.getUserEntityByUserId(userId);
+        User user = userService.getUserOrThrow(userId);
         Board board = BoardMapper.fromDto(boardRequestDto, user);
         Board savedBoard = boardRepository.save(board);
 

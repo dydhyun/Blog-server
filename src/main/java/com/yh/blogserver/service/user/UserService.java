@@ -13,19 +13,19 @@ import java.util.Set;
 
 public interface UserService {
 
-    Map<String, String> userIdCheck(String userId);
+    void userIdCheck(String userId);
 
-    Boolean userPwCheck(String userPw);
+    void userPwCheck(String userPw);
 
-    Map<String, String> userNicknameCheck(String userNickname);
+    void userNicknameCheck(String userNickname);
 
     UserResponseDto join(UserRequestDto userRequestDto);
 
 //    UserResponseDto login(UserRequestDto userRequestDto);
 
-    UserResponseDto getUserByUserId(String UserId);
+    User getUserOrThrow(String userId);
 
-    User getUserEntityByUserId(String userId);
+    UserResponseDto getUserByUserId(String UserId);
 
     String authenticatedUser(String token);
 
@@ -39,7 +39,7 @@ public interface UserService {
 
     void deleteAccount(String userId);
 
-    PageResponse<UserResponseDto> getDeletedUser(Pageable pageable);
+    PageResponse<UserResponseDto> getDeletedUsers(Pageable pageable);
 
     void restoreAccount(String userId);
 }

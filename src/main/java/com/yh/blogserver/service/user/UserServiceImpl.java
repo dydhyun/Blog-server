@@ -11,7 +11,6 @@ import com.yh.blogserver.entity.User;
 import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
-import com.yh.blogserver.util.message.BoardMessage;
 import com.yh.blogserver.util.message.UserMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,8 +37,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Map<String, String> userIdCheck(String userId) {
-        HashMap<String, String> checkMsgMap = new HashMap<>();
+    public void userIdCheck(String userId) {
 
         if (userId.contains(" ")){
             throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
@@ -56,13 +54,10 @@ public class UserServiceImpl implements UserService{
         if (countedByUserId >= 1) {
             throw new CustomException(UserMessage.INVALID_USER_ID);
         }
-
-        checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_ID.message());
-        return checkMsgMap;
     }
 
     @Override
-    public Boolean userPwCheck(String userPw) {
+    public void userPwCheck(String userPw) {
 
         if (userPw.contains(" ")){
             throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
@@ -76,13 +71,10 @@ public class UserServiceImpl implements UserService{
         if (!userPw.matches(".*[`~!@#$%^&*()_=.,].*")) {
             throw new CustomException(UserMessage.PASSWORD_NOT_VALID_MESSAGE);
         }
-
-        return true;
     }
 
     @Override
-    public Map<String, String> userNicknameCheck(String userNickname) {
-        HashMap<String, String> checkMsgMap = new HashMap<>();
+    public void userNicknameCheck(String userNickname) {
 
         if (userNickname.contains(" ")){
             throw new CustomException(UserMessage.CAN_NOT_INCLUDE_SPACE);
@@ -96,9 +88,6 @@ public class UserServiceImpl implements UserService{
         if (countedByUserNickname >= 1){
             throw new CustomException(UserMessage.INVALID_USER_NICKNAME);
         }
-
-        checkMsgMap.put("checkMessage", UserMessage.AVAILABLE_USER_NICKNAME.message());
-        return checkMsgMap;
     }
 
     @Transactional
@@ -129,18 +118,17 @@ public class UserServiceImpl implements UserService{
 //    }
 
     @Override
-    public UserResponseDto getUserByUserId(String userId) {
-
-        User foundUser = userRepository.findByUserId(userId)
+    public User getUserOrThrow(String userId) {
+        return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
-        
-        return UserMapper.toUserResponseDto(foundUser);
     }
 
     @Override
-    public User getUserEntityByUserId(String userId) {
-        return userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+    public UserResponseDto getUserByUserId(String userId) {
+
+        User foundUser = getUserOrThrow(userId);
+
+        return UserMapper.toUserResponseDto(foundUser);
     }
 
     @Override // 삭제예정 - 테스트 코드에서 사용중인 임시 메서드
@@ -192,8 +180,7 @@ public class UserServiceImpl implements UserService{
     public void updateMyPage(String userId, UserUpdateRequestDto userUpdateRequestDto) {
         log.info("UPDATE MYPAGE 메서드 실행");
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+        User user = getUserOrThrow(userId);
 
         if (userUpdateRequestDto.userPw() != null) {
             userPwCheck(userUpdateRequestDto.userPw());
@@ -213,8 +200,7 @@ public class UserServiceImpl implements UserService{
     public void deleteAccount(String userId) {
         log.info("DELETE ACCOUNT 메서드 실행");
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+        User user = getUserOrThrow(userId);
 
         if (user.isUserDeleteFlag()) {
             throw new CustomException(UserMessage.ALREADY_DELETED);
@@ -224,7 +210,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public PageResponse<UserResponseDto> getDeletedUser(Pageable pageable) {
+    public PageResponse<UserResponseDto> getDeletedUsers(Pageable pageable) {
         log.info("GET DELETED_USER 메서드 실행");
 
         Page<User> foundUserList = userRepository.findByUserDeleteFlagTrue(pageable);
@@ -238,8 +224,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void restoreAccount(String userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
+        User user = getUserOrThrow(userId);
 
         if (!user.isUserDeleteFlag()) {
             throw new CustomException(UserMessage.ALREADY_ACTIVE);
