@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Slf4j
 @Tag(name = "User API", description = "유저, 회원가입 관련 API")
 @RestController
@@ -39,13 +37,13 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "사용할 수 없는 아이디")
     })
     @GetMapping("/exists/id")
-    public ResponseEntity<ResponseDto<Map<String, String>>> userIdCheck(@RequestParam String userId){
+    public ResponseEntity<ResponseDto<Void>> userIdCheck(@RequestParam String userId){
         log.info("[userIdCheck 요청] userId={}", userId);
 
-        Map<String, String> checkMsgMap = userService.userIdCheck(userId);
+        userService.userIdCheck(userId);
 
         return ResponseEntity
-                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY), HttpStatus.OK.value()));
+                .ok(ResponseDto.success(null, UserMessage.AVAILABLE_USER_ID.message(), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -57,13 +55,13 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "사용할 수 없는 닉네임")
     })
     @GetMapping("/exists/nickname")
-    public ResponseEntity<ResponseDto<Map<String, String>>> userNicknameCheck(@RequestParam String userNickname){
+    public ResponseEntity<ResponseDto<Void>> userNicknameCheck(@RequestParam String userNickname){
         log.info("[userNicknameCheck 요청] userNickname={}", userNickname);
 
-        Map<String, String> checkMsgMap = userService.userNicknameCheck(userNickname);
+        userService.userNicknameCheck(userNickname);
 
         return ResponseEntity
-                .ok(ResponseDto.success(checkMsgMap, checkMsgMap.get(CHECK_MSG_KEY), HttpStatus.OK.value()));
+                .ok(ResponseDto.success(null, UserMessage.AVAILABLE_USER_NICKNAME.message(), HttpStatus.OK.value()));
     }
 
     @Operation(
@@ -83,7 +81,7 @@ public class UserController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "403", description = "회원가입 실패")
+            @ApiResponse(responseCode = "400", description = "회원가입 실패 사용할 수 없는 비밀번호")
     })
     @PostMapping("")
     public ResponseEntity<ResponseDto<UserResponseDto>> join(@RequestBody UserRequestDto userRequestDto){
