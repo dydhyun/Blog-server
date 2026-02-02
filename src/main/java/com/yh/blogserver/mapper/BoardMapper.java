@@ -15,6 +15,7 @@ public class BoardMapper {
         UserResponseDto userResponseDto = UserMapper.toUserResponseDto(board.getUser());
 
         return BoardResponseDto.builder()
+                .boardIndex(board.getBoardIndex())
                 .userResponseDto(userResponseDto)
                 .boardTitle(board.getBoardTitle())
                 .boardContents(board.getBoardContents())
