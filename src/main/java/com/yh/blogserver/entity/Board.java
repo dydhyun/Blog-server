@@ -51,6 +51,9 @@ public class Board {
         this.boardDeleteFlag = true;
         this.boardDeletedAt = LocalDateTime.now();
     }
+    public void markAsActive() {
+        this.boardDeleteFlag = false;
+    }
 
     public void updateBoard(BoardUpdateRequestDto boardUpdateRequestDto) {
 
