@@ -11,6 +11,7 @@ import com.yh.blogserver.entity.User;
 import com.yh.blogserver.exception.CustomException;
 import com.yh.blogserver.mapper.UserMapper;
 import com.yh.blogserver.repository.user.UserRepository;
+import com.yh.blogserver.util.message.BoardMessage;
 import com.yh.blogserver.util.message.UserMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -215,6 +216,10 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
 
+        if (user.isUserDeleteFlag()) {
+            throw new CustomException(UserMessage.ALREADY_DELETED);
+        }
+
         user.markAsDeleted();
     }
 
@@ -236,6 +241,9 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(UserMessage.USER_NOT_FOUND));
 
+        if (!user.isUserDeleteFlag()) {
+            throw new CustomException(UserMessage.ALREADY_ACTIVE);
+        }
         user.markAsActive();
     }
 
