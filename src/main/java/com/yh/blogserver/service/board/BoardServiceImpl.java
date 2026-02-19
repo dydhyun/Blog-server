@@ -111,7 +111,8 @@ public class BoardServiceImpl implements BoardService {
 
         Page<Board> boards = switch (searchCondition){
             case TITLE ->
-                    boardRepository.findByBoardTitleContainingAndBoardDeleteFlagFalse(keyword, pageable);
+//                    boardRepository.findByBoardTitleContainingAndBoardDeleteFlagFalse(keyword, pageable);
+                    boardRepository.searchBoardTitleWithFetchJoin(keyword, pageable);
             case CONTENT ->
                     boardRepository.findByBoardContentsContainingAndBoardDeleteFlagFalse(keyword, pageable);
             case WRITER ->

@@ -26,7 +26,22 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 """)
     int deleteExpiredBoard(LocalDateTime expiredTime);
 
-    Page<Board> findByBoardTitleContainingAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
+    @Query(
+    value = """
+    select b
+    from Board b
+    join fetch b.user
+    where b.boardTitle like %:keyword%
+    and b.boardDeleteFlag = false
+    """,
+    countQuery = """
+    select count(b)
+    from Board b
+    where b.boardTitle like %:keyword%
+    and b.boardDeleteFlag = false
+    """)
+    Page<Board> searchBoardTitleWithFetchJoin(String keyword, Pageable pageable);
+//    Page<Board> findByBoardTitleContainingAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
 
     Page<Board> findByBoardContentsContainingAndBoardDeleteFlagFalse(String keyword, Pageable pageable);
 
