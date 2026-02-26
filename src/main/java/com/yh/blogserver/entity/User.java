@@ -16,10 +16,7 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "userSeqGenerator"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIndex;
 
     @Column(unique = true)
