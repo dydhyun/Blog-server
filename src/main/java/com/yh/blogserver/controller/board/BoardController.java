@@ -6,7 +6,7 @@ import com.yh.blogserver.dto.request.BoardUpdateRequestDto;
 import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.ResponseDto;
-import com.yh.blogserver.security.auth.CustomUserDetails;
+import com.yh.blogserver.config.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.board.BoardService;
 import com.yh.blogserver.util.message.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -145,7 +145,7 @@ public class BoardController {
             description = """
                     사용자의 인증 여부에 관계없이 게시글을 검색할 수 있습니다.
                     BoardSearchCondition 프론트엔드의 셀렉트 박스값으로 TITLE, CONTENT, WRITER 검색조건을 선택하고,
-                    keyWord 값으로 검색어를 입력 받습니다. 
+                    keyWord 값으로 검색어를 입력 받습니다.
                     기본 페이지 값, 정렬 기준은 다음과 같으며, 프론트에서 쿼리파라미터로 요청받습니다.
                     boards?searchCondition=TITLE&keyword=test&page=0&size=10&sort=boardCreatedTime,desc
                     """

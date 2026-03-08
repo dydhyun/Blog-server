@@ -3,7 +3,7 @@ package com.yh.blogserver.controller.admin;
 import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
-import com.yh.blogserver.security.auth.CustomUserDetails;
+import com.yh.blogserver.config.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.admin.AdminUseCase;
 import com.yh.blogserver.util.message.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;

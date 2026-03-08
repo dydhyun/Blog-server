@@ -1,10 +1,9 @@
 package com.yh.blogserver.controller.mypage;
 
-import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.request.UserUpdateRequestDto;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
-import com.yh.blogserver.security.auth.CustomUserDetails;
+import com.yh.blogserver.config.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.mypage.MyPageUseCase;
 import com.yh.blogserver.util.message.ResponseMessage;
 import com.yh.blogserver.util.message.UserMessage;

@@ -1,4 +1,4 @@
-package com.yh.blogserver.security.auth;
+package com.yh.blogserver.config.security.auth;
 
 import com.yh.blogserver.entity.User;
 import com.yh.blogserver.repository.user.UserRepository;

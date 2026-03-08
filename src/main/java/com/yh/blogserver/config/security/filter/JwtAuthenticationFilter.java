@@ -1,7 +1,7 @@
 package com.yh.blogserver.config.security.filter;
 
 import com.yh.blogserver.config.security.jwt.JwtTokenProvider;
-import com.yh.blogserver.security.auth.CustomUserDetailsService;
+import com.yh.blogserver.config.security.auth.CustomUserDetailsService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

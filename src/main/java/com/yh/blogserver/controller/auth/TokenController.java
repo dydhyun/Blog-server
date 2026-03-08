@@ -3,7 +3,7 @@ package com.yh.blogserver.controller.auth;
 import com.yh.blogserver.dto.auth.TokenPair;
 import com.yh.blogserver.dto.request.UserRequestDto;
 import com.yh.blogserver.dto.response.ResponseDto;
-import com.yh.blogserver.security.auth.CustomUserDetails;
+import com.yh.blogserver.config.security.auth.CustomUserDetails;
 import com.yh.blogserver.service.auth.AuthService;
 import com.yh.blogserver.util.message.AuthMessage;
 import com.yh.blogserver.util.message.UserMessage;
