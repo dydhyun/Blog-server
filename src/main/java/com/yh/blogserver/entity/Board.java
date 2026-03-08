@@ -38,7 +38,7 @@ public class Board {
     private long boardViewCnt;
 
     private boolean boardDeleteFlag;
-    private LocalDateTime boardDeletedAt = null;
+    private LocalDateTime boardDeletedAt;
 
     @PrePersist
     private void prePersist(){
