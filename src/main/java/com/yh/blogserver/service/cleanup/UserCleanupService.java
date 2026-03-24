@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class UserCleanupService {
 
     private final UserRepository userRepository;
+    private static final int CHUNK_SIZE = 1000;
 
     public UserCleanupService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -22,12 +23,23 @@ public class UserCleanupService {
         log.info("[USER CLEANUP] deleteExpiredUser 실행");
         LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
 
-        int deleteCount = userRepository.deleteExpiredUser(expiredTime);
+        int totalDeleted = 0;
 
-        if (deleteCount > 0){
-            log.info("[USER CLEANUP] 삭제된 유저 수 : {}", deleteCount);
+        while (true){
+            int deleted = deleteChunk(expiredTime);
+
+            if (deleted == 0){
+                break;
+            }
+
+            totalDeleted += deleted;
+            log.info("삭제 진행중. chunk 삭제 수 = {}", deleted);
         }
+        log.info("총 삭제 수 = {}", totalDeleted);
+    }
 
+    private int deleteChunk(LocalDateTime expiredTime){
+        return userRepository.deleteExpiredUser(expiredTime, CHUNK_SIZE);
     }
 
 }
