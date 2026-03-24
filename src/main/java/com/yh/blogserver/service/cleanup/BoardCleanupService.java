@@ -1,8 +1,7 @@
-package com.yh.blogserver.service.scheduler;
+package com.yh.blogserver.service.cleanup;
 
 import com.yh.blogserver.repository.board.BoardRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,16 +17,16 @@ public class BoardCleanupService {
         this.boardRepository = boardRepository;
     }
 
-    @Scheduled(cron = "0 0/30 * * * *")// 정각/30분마다 실행
     @Transactional
-    public void deleteExpiredBoard(){
-//        log.info("[Board Cleanup] deleteExpiredBoard 실행");
-        LocalDateTime expiredTime = LocalDateTime.now().minusDays(7);
+    public void deleteExpiredBoards() {
+        log.info("[Board Cleanup] deleteExpiredBoard 실행");
+        LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
 
         int deleteCount = boardRepository.deleteExpiredBoard(expiredTime);
 
-        if(deleteCount > 0){
+        if (deleteCount > 0) {
             log.info("[Board Cleanup] 삭제된 게시글 수 = {} ", deleteCount);
         }
     }
+
 }

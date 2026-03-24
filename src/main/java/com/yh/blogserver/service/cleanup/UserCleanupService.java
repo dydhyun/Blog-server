@@ -1,8 +1,7 @@
-package com.yh.blogserver.service.scheduler;
+package com.yh.blogserver.service.cleanup;
 
 import com.yh.blogserver.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +17,10 @@ public class UserCleanupService {
         this.userRepository = userRepository;
     }
 
-    @Scheduled(cron = "0 */5 * * * *", zone = "Asia/Seoul") // 임시로 5분마다 스케줄링 실행
     @Transactional
-    public void deleteExpiredUser(){
+    public void deleteExpiredUsers(){
         log.info("[USER CLEANUP] deleteExpiredUser 실행");
-        LocalDateTime expiredTime = LocalDateTime.now().minusDays(7);
+        LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
 
         int deleteCount = userRepository.deleteExpiredUser(expiredTime);
 
@@ -31,4 +29,5 @@ public class UserCleanupService {
         }
 
     }
+
 }
