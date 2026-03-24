@@ -20,12 +20,13 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Modifying
-    @Query("""
-        DELETE FROM Board b
-        WHERE b.boardDeleteFlag = true
-        AND b.boardDeletedAt <= :expiredTime
-""")
-    int deleteExpiredBoard(LocalDateTime expiredTime);
+    @Query(value = """
+        DELETE FROM board
+        WHERE board_delete_flag = true
+        AND board_deleted_at <= :expiredTime
+        LIMIT :limit
+    """, nativeQuery = true)
+    int deleteExpiredBoard(@Param("expiredTime") LocalDateTime expiredTime, @Param("limit") int limit);
 
     @Query(
     value = """
