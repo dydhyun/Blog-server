@@ -18,7 +18,7 @@ public class TokenCleanupService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    @Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul") // 매일 새벽 1시
     @Transactional
     public void deleteExpiredTokens(){
         int deleteCount =
