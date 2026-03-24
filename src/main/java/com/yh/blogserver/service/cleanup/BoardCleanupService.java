@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class BoardCleanupService {
 
     private final BoardRepository boardRepository;
+    private static final int CHUNK_SIZE = 1000;
 
     public BoardCleanupService(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
@@ -19,14 +20,26 @@ public class BoardCleanupService {
 
     @Transactional
     public void deleteExpiredBoards() {
-        log.info("[Board Cleanup] deleteExpiredBoard 실행");
+        log.info("[Board CLEANUP] deleteExpiredBoard 실행");
         LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
 
-        int deleteCount = boardRepository.deleteExpiredBoard(expiredTime);
+        int totalDeleted = 0;
 
-        if (deleteCount > 0) {
-            log.info("[Board Cleanup] 삭제된 게시글 수 = {} ", deleteCount);
+        while (true){
+            int deleted = deleteChunk(expiredTime);
+
+            if (deleted == 0){
+                break;
+            }
+
+            totalDeleted += deleted;
+            log.info("삭제 진행중. chunk 삭제 수 = {}", deleted);
         }
+        log.info("총 삭제 수 = {}", totalDeleted);
+    }
+
+    private int deleteChunk(LocalDateTime expiredTime){
+        return boardRepository.deleteExpiredBoard(expiredTime, CHUNK_SIZE);
     }
 
 }
