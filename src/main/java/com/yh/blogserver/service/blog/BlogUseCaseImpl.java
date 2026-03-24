@@ -87,7 +87,7 @@ public class BlogUseCaseImpl implements BlogUseCase {
                 summaries.getSize(),
                 summaries.getTotalElements());
 
-        log.debug("boards content={}", summaries.getContent());
+        log.debug("summaries.getNumberOfElements = {}", summaries.getNumberOfElements());
 
         return PageResponse.from(summaries);
     }
@@ -100,7 +100,7 @@ public class BlogUseCaseImpl implements BlogUseCase {
 
         BlogResponseDto blogResponseDto = new BlogResponseDto(header, summaries);
         log.info("[getUserBlog] userId={}", userId);
-        log.debug("blogResponse={}", blogResponseDto);
+//        log.debug("blogResponse={}", blogResponseDto);
 
         return blogResponseDto;
     }
