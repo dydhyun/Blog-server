@@ -61,12 +61,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<BlogHeaderDto> findBlogHeaderByUserId(@Param("userId") String userId);
 
     @Modifying
-    @Query("""
-    DELETE FROM User u
-    WHERE u.userDeleteFlag = true
-    AND u.userDeletedAt <= :expiredTime
-    """)
-    int deleteExpiredUser(@Param("expiredTime") LocalDateTime expiredTime);
+    @Query(value = """
+    DELETE FROM user
+    WHERE user_delete_flag = true
+    AND user_deleted_at <= :expiredTime
+    LIMIT :limit
+    """,nativeQuery = true)
+    int deleteExpiredUser(@Param("expiredTime") LocalDateTime expiredTime, @Param("limit") int limit);
 
     Page<User> findByUserDeleteFlagTrue(Pageable pageable);
 }
