@@ -6,43 +6,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
-public class UserCleanupService {
+public class UserCleanupService extends AbstractCleanupService{
 
     private final UserRepository userRepository;
-    private static final int CHUNK_SIZE = 1000;
-    private final TransactionTemplate transactionTemplate;
 
     public UserCleanupService(UserRepository userRepository, TransactionTemplate transactionTemplate) {
+        super(transactionTemplate);
         this.userRepository = userRepository;
-        this.transactionTemplate = transactionTemplate;
     }
 
     public void deleteExpiredUsers(){
-        log.info("[USER CLEANUP] deleteExpiredUser 실행");
-        LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
-
-        int totalDeleted = 0;
-
-        while (true){
-            int deleted = Optional.ofNullable(
-                    transactionTemplate.execute(status -> deleteChunk(expiredTime))
-            ).orElse(0);
-
-            if (deleted == 0){
-                break;
-            }
-
-            totalDeleted += deleted;
-            log.info("삭제 진행중. chunk 삭제 수 = {}", deleted);
-        }
-        log.info("총 삭제 수 = {}", totalDeleted);
+        cleanup("USER");
     }
 
-    private int deleteChunk(LocalDateTime expiredTime){
+    @Override
+    protected int deleteChunk(LocalDateTime expiredTime){
         return userRepository.deleteExpiredUser(expiredTime, CHUNK_SIZE);
     }
 
