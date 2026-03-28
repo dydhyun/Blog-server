@@ -3,9 +3,10 @@ package com.yh.blogserver.service.cleanup;
 import com.yh.blogserver.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -13,12 +14,13 @@ public class UserCleanupService {
 
     private final UserRepository userRepository;
     private static final int CHUNK_SIZE = 1000;
+    private final TransactionTemplate transactionTemplate;
 
-    public UserCleanupService(UserRepository userRepository) {
+    public UserCleanupService(UserRepository userRepository, TransactionTemplate transactionTemplate) {
         this.userRepository = userRepository;
+        this.transactionTemplate = transactionTemplate;
     }
 
-    @Transactional
     public void deleteExpiredUsers(){
         log.info("[USER CLEANUP] deleteExpiredUser 실행");
         LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
@@ -26,7 +28,9 @@ public class UserCleanupService {
         int totalDeleted = 0;
 
         while (true){
-            int deleted = deleteChunk(expiredTime);
+            int deleted = Optional.ofNullable(
+                    transactionTemplate.execute(status -> deleteChunk(expiredTime))
+            ).orElse(0);
 
             if (deleted == 0){
                 break;
