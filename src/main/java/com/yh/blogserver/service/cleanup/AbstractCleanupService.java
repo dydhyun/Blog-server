@@ -16,7 +16,7 @@ public abstract class AbstractCleanupService {
         this.transactionTemplate = transactionTemplate;
     }
 
-    public void cleanup(String domainName){
+    protected final void cleanup(String domainName){
         log.info("[{} CLEANUP] 실행", domainName);
         LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
 
