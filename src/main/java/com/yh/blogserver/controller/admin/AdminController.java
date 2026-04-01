@@ -1,5 +1,6 @@
 package com.yh.blogserver.controller.admin;
 
+import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.ResponseDto;
 import com.yh.blogserver.dto.response.UserResponseDto;
@@ -87,6 +88,28 @@ public class AdminController {
         adminUseCase.restoreUser(userId);
 
         return ResponseEntity.noContent().build();
+    }
+
+
+    @Operation(summary = "삭제 게시글 조회 API",
+            description = "deleteFlag 가 활성화된 게시글 조회 API"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "조회 실패")
+    })
+    @GetMapping("/boards/deleted")
+    public ResponseEntity<ResponseDto<PageResponse<BoardResponseDto>>> getDeletedBoards(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PageableDefault(size = 50, sort = "boardDeletedAt") Pageable pageable){
+
+        String adminId = customUserDetails.getUsername();
+        log.info("[ADMIN getDeletedBoards 요청] adminId = {}", adminId);
+
+        PageResponse<BoardResponseDto> deletedBoards = adminUseCase.getDeletedBoards(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(deletedBoards, ResponseMessage.OK.message(), HttpStatus.OK.value()));
     }
 
     @Operation(summary = "관리자 권한 게시글 삭제 API",
