@@ -28,6 +28,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     """, nativeQuery = true)
     int deleteExpiredBoard(@Param("expiredTime") LocalDateTime expiredTime, @Param("limit") int limit);
 
+    @Modifying
+    @Query(value = """
+        DELETE FROM Board b
+        WHERE b.boardDeleteFlag = true
+        AND b.boardDeletedAt <= :expiredTime
+    """)
+    int deleteBoardTest(@Param("expiredTime") LocalDateTime expiredTime);
+
     @Query(
     value = """
     select b
@@ -99,4 +107,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Modifying
     @Query("update Board b set b.boardViewCnt = b.boardViewCnt + 1 where b.boardIndex = :boardIndex")
     void increaseBoardViewCount(@Param("boardIndex") Long boardIndex);
+
+    @EntityGraph(attributePaths = {"user"})
+    Page<Board> findByBoardDeleteFlagTrue(Pageable pageable);
 }
