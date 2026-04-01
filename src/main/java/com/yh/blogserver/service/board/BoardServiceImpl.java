@@ -156,4 +156,16 @@ public class BoardServiceImpl implements BoardService {
         board.markAsActive();
     }
 
+    @Override
+    public PageResponse<BoardResponseDto> getDeletedBoards(Pageable pageable){
+        log.info("GET DELETED_BOARDS 메서드 실행");
+
+        Page<Board> foundBoardList = boardRepository.findByBoardDeleteFlagTrue(pageable);
+
+        Page<BoardResponseDto> boardResponseDtosPage =
+                foundBoardList.map(BoardMapper::toBoardResponseDto);
+
+        return PageResponse.from(boardResponseDtosPage);
+    }
+
 }

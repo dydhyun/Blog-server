@@ -33,4 +33,6 @@ public interface BoardService {
     void deleteBoardByAdmin(Long boardId);
 
     void restoreBoard(Long boardId);
+
+    PageResponse<BoardResponseDto> getDeletedBoards(Pageable pageable);
 }

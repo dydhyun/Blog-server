@@ -1,5 +1,6 @@
 package com.yh.blogserver.service.admin;
 
+import com.yh.blogserver.dto.response.BoardResponseDto;
 import com.yh.blogserver.dto.response.PageResponse;
 import com.yh.blogserver.dto.response.UserResponseDto;
 import com.yh.blogserver.service.board.BoardService;
@@ -34,6 +35,11 @@ public class AdminUseCaseImpl implements AdminUseCase{
     @Override
     public void restoreUser(String userId) {
         userService.restoreAccount(userId);
+    }
+
+    @Override
+    public PageResponse<BoardResponseDto> getDeletedBoards(Pageable pageable){
+        return boardService.getDeletedBoards(pageable);
     }
 
     @Override
