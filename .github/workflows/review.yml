@@ -1,0 +1,59 @@
+name: Review Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Save Review Data
+        run: |
+          {
+            echo "DIFF<<EOF"
+            git diff HEAD~1 HEAD \
+              -- '*.java' \
+              ':(exclude)src/test/**'
+            echo "EOF"
+
+            echo "COMMIT_MESSAGE<<EOF"
+            git log -1 --pretty=%B
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      - name: Create payload
+        run: |
+          jq -n \
+          --arg diff "$DIFF" \
+          --arg author "${{ github.actor }}" \
+          --arg repository "${{ github.repository }}" \
+          --arg commitMessage "$COMMIT_MESSAGE" \
+          --arg runId "${{ github.run_id }}" \
+          --arg commitId "${{ github.sha }}" \
+          '{
+            diff: $diff,
+            author: $author,
+            repository: $repository,
+            commitMessage: $commitMessage,
+            runId: $runId,
+            commitId: $commitId
+          }' > payload.json
+
+          cat payload.json
+
+      - name: Send Review Request
+        run: |
+          curl -X POST \
+            "${{ secrets.REVIEW_API_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.REVIEW_API_KEY }}" \
+            -H "X-Repository: ${{ github.repository}}" \
+            -H "Content-Type: application/json" \
+            --data @payload.json
