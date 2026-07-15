@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             jwtTokenProvider.validateToken(token);
-
+// 개선가능 파싱 2회 -> 1회
             String userId = jwtTokenProvider.getUserIdFromToken(token);
 
             UserDetails userDetails =
