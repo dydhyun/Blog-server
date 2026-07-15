@@ -9,7 +9,7 @@ import java.util.Optional;
 @Slf4j
 public abstract class AbstractCleanupService {
 
-    protected static final int CHUNK_SIZE = 1000;
+    protected static final int CHUNK_SIZE = 5000;
     private final TransactionTemplate transactionTemplate;
 
     protected AbstractCleanupService(TransactionTemplate transactionTemplate) {
@@ -18,7 +18,7 @@ public abstract class AbstractCleanupService {
 
     protected final void cleanup(String domainName){
         log.info("[{} CLEANUP] 실행", domainName);
-        LocalDateTime expiredTime = LocalDateTime.now().minusDays(30);
+        LocalDateTime expiredTime = LocalDateTime.now().minusDays(0);
 
         int totalDeleted = 0;
 
